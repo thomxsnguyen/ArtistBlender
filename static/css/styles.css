@@ -1,0 +1,283 @@
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 60px;
+    background-color: #0e0e0e;
+    color: #fff;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #0e0e0e;
+}
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-container img {
+    width: 40px; 
+    height: 40px;
+    margin-right: 10px; 
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+}
+
+.user-profile img.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.user-profile span {
+    font-size: 14px;
+    color: #fff;
+}
+
+h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    max-width: 900px;
+    margin: auto;
+}
+
+.artist-pill {
+    display: inline-flex;
+    align-items: center;
+    background-color: #1DB954;
+    color: white;
+    padding: 2px 6px; 
+    margin: 1px; 
+    border-radius: 6px;
+    font-size: 10px; 
+    cursor: pointer;
+    max-height: 30px; 
+}
+
+.artist-pill .remove-pill {
+    margin-left: 5px;
+    cursor: pointer;
+    color: #000;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.centered-heading {
+    text-align: center;
+    font-size: 64px; 
+    margin-top: 50px; 
+    margin-bottom: -150px; 
+    color: #ffffff; 
+    font-weight: bold; 
+}
+
+.subtitle {
+    font-size: 18px; 
+    color: #ffffff; 
+    margin-top: -10px;
+    font-weight: 400; 
+}
+
+#searchContainer {
+    position: relative;
+    width: 60%;
+    margin: 200px auto;
+}
+
+.search-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 10px;
+    background-color: #444;
+    border-radius: 25px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+    height: 30px;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.search-bar .artist-pill {
+    margin: 5px 5px 0 0;
+}
+
+.search-bar input {
+    flex: 1;
+    border: none;
+    background-color: transparent;
+    color: #fff;
+    outline: none;
+    font-size: 14px;
+    height: 100%;
+    align-self: center;
+    padding-left: 5px;
+    box-sizing: border-box;
+}
+
+#artistList {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    color: #000;
+    border: 1px solid #444;
+    border-radius: 0 0 25px 25px;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+    display: none;
+    border-top: none;
+}
+
+.artist-result {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #ddd;
+    font-size: 12px;  
+}
+
+.artist-result:hover {
+    background-color: #1DB954;
+    color: #fff;
+}
+
+button {
+    display: block;
+    margin: 0px auto; 
+    margin-top: -100px; 
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #1DB954;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-family: 'Poppins', Arial, sans-serif;
+    font-weight: bold;
+}
+
+.center-album-cover {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 30px; 
+    margin-bottom: 20px; 
+}
+
+.center-album-cover img {
+    max-width: 150px; 
+    border-radius: 10px;
+    display: none;
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #000000;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+}
+
+a {
+    color: #1DB954;
+    text-decoration: none;
+}
+
+.playback-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.playback-controls button {
+    background-color: transparent;
+    border: none;
+    color: #ffffff;
+    width: 40px;
+    height: 40px;
+    margin: 0 20px;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    outline: none;
+}
+
+.playback-controls button.play {
+    background-color: transparent;
+    width: 60px;
+    height: 60px;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    color: #ffffff;
+    font-size: 18px;
+}
+
+.playback-controls button::before {
+    font-family: FontAwesome;
+}
+
+.playback-controls button.previous::before {
+    content: '\f048'; 
+}
+
+.playback-controls button.play::before {
+    content: '\f04b'; 
+    font-size: 30px; 
+}
+
+.playback-controls button.pause::before {
+    content: '\f04c'; 
+    font-size: 30px; 
+}
+
+.playback-controls button.next::before {
+    content: '\f051'; 
+}
+
+.error-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #333;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    text-align: center;
+}
+
+.error-popup button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #1DB954;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
