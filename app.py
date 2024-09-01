@@ -144,10 +144,12 @@ def current_track():
             'track_url': track_url,
             'album_image_url': album_image_url,
             'track_id': track_id,
-            'is_playing': is_playing
+            'is_playing': is_playing,
+            'show_controls': True  # Add this flag to control playback visibility
         }
     else:
-        return 
+        return {'show_controls': False}  # Add this flag to hide playback controls when no track is playing
+
 
 @app.route('/previous')
 def previous_track():

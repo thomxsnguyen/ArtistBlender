@@ -28,11 +28,20 @@ function updatePauseButtonState() {
 
 function updateAlbumCover(albumImageUrl) {
     const albumCover = document.getElementById('album-cover');
-    if (albumCover && albumImageUrl) {
-        albumCover.src = albumImageUrl;
-        albumCover.style.display = 'block';
+    const playbackControls = document.querySelector('.playback-controls');
+
+    if (albumCover && playbackControls) {
+        if (albumImageUrl) {
+            albumCover.src = albumImageUrl;
+            albumCover.style.display = 'block';   // Show album cover
+            playbackControls.style.display = 'flex';  // Show playback controls
+        } else {
+            albumCover.style.display = 'none';    // Hide album cover
+            playbackControls.style.display = 'none';  // Hide playback controls
+        }
     }
 }
+
 
 function searchArtists() {
     const query = document.getElementById('searchBar').value.trim();
