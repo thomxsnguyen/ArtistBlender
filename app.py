@@ -4,6 +4,7 @@ import random
 from spotipy.oauth2 import SpotifyOAuth
 from flask import Flask, redirect, request, session, render_template, jsonify
 import commands as commands  
+import concurrent.futures
 
 app = Flask(__name__)
 app.secret_key = config.CLIENT_SECRET
@@ -92,22 +93,36 @@ def shuffle():
         return redirect('/')
 
     sp = spotipy.Spotify(auth=token)
-    
-    devices = sp.devices()
-    if not devices['devices']:
-        return jsonify({'error': 'No active devices found. Please open Spotify on one of your devices.'}), 400
 
-    device_id = devices['devices'][0]['id']
+    # Get the current playback information
+    playback_info = sp.current_playback()
+
+    if not playback_info or not playback_info['device']:
+        return jsonify({'error': 'No active devices found. Please open Spotify on the device you are using.'}), 400
+
+    device_id = playback_info['device']['id']  # Use the current device's ID
 
     all_tracks = []
-    for artist_id in selected_artist_ids:
-        top_tracks = sp.artist_top_tracks(artist_id, country='US')['tracks']
-        print(f"Artist ID: {artist_id}, Found {len(top_tracks)} tracks")
-        all_tracks.extend(top_tracks)
+
+    # Function to fetch albums and tracks concurrently
+    def fetch_tracks_for_artist(artist_id):
+        artist_tracks = []
+        albums = sp.artist_albums(artist_id, album_type='album,single', country='US')['items']
+        album_ids = [album['id'] for album in albums]
+        for album_id in album_ids:
+            album_tracks = sp.album_tracks(album_id)['items']
+            artist_tracks.extend(album_tracks)
+        return artist_tracks
+
+    # Use concurrent.futures to fetch tracks concurrently
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = [executor.submit(fetch_tracks_for_artist, artist_id) for artist_id in selected_artist_ids]
+        for future in concurrent.futures.as_completed(futures):
+            all_tracks.extend(future.result())
 
     if all_tracks:
         random.shuffle(all_tracks)
-        track_uris = [track['uri'] for track in all_tracks[:10]]
+        track_uris = [track['uri'] for track in all_tracks]
 
         try:
             sp.start_playback(device_id=device_id, uris=track_uris)
@@ -120,6 +135,7 @@ def shuffle():
     else:
         print("No tracks found for the selected artists.")
         return jsonify({'error': 'No tracks found for the selected artists.'}), 400
+
 
 @app.route('/current_track')
 def current_track():
@@ -145,10 +161,10 @@ def current_track():
             'album_image_url': album_image_url,
             'track_id': track_id,
             'is_playing': is_playing,
-            'show_controls': True  # Add this flag to control playback visibility
+            'show_controls': True  
         }
     else:
-        return {'show_controls': False}  # Add this flag to hide playback controls when no track is playing
+        return {'show_controls': False}  
 
 
 @app.route('/previous')
