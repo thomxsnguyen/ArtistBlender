@@ -156,6 +156,19 @@ h1 {
     color: #fff;
 }
 
+.shuffle-button-container {
+    text-align: center;
+    margin-top: 20px; /* Adjust as needed */
+}
+
+#shuffleButton {
+    visibility: hidden; /* Initially hidden */
+}
+
+#shuffleButton.visible {
+    visibility: visible;
+}
+
 button {
     display: block;
     margin: 0px auto; 
@@ -253,9 +266,13 @@ a {
     font-size: 30px; 
 }
 
+
+
 .playback-controls button.next::before {
     content: '\f051'; 
 }
+
+
 
 .error-popup {
     display: none;

@@ -19,6 +19,44 @@ function initializePlayState() {
         });
 }
 
+function shuffle() {
+    const selectedArtistIds = Array.from(document.querySelectorAll('input[name="artists"]')).map(input => input.value);
+
+    if (selectedArtistIds.length === 0) {
+        alert('Please select at least one artist before shuffling.');
+        return;
+    }
+
+    fetch('/shuffle', {
+        method: 'POST',
+        body: new URLSearchParams(new FormData(document.querySelector('form')))
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (data.is_playing) {
+                changePlayButtonToPause();
+            } else {
+                changePlayButtonToPlay();
+            }
+            // Show the album cover after shuffle
+            document.getElementById('album-cover').style.display = 'block';
+        } else {
+            alert(data.error || 'Error shuffling tracks.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An unexpected error occurred.');
+    });
+}
+
+document.querySelector('form').onsubmit = function(event) {
+    event.preventDefault();
+    shuffle();
+};
+
+
 function updatePauseButtonState() {
     const pauseButtonIcon = document.querySelector('#playPauseButton i');
     if (pauseButtonIcon) {
@@ -96,6 +134,14 @@ function toggleArtist(id, name, isChecked) {
     updateSelectedArtistsList();
     document.getElementById('artistList').innerHTML = '';  
     document.getElementById('artistList').style.display = 'none';
+    
+    // Show or hide the shuffle button based on the number of selected artists
+    const shuffleButton = document.getElementById('shuffleButton');
+    if (selectedArtists.length > 0) {
+        shuffleButton.classList.add('visible');
+    } else {
+        shuffleButton.classList.remove('visible');
+    }
 }
 
 function updateHiddenInputs() {

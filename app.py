@@ -125,16 +125,19 @@ def shuffle():
         track_uris = [track['uri'] for track in all_tracks]
 
         try:
-            sp.start_playback(device_id=device_id, uris=track_uris)
-           
+            current_playback = sp.current_playback()
+            if current_playback is None or not current_playback['is_playing']:
+                sp.start_playback(device_id=device_id, uris=track_uris)
+            else:
+                sp.add_to_queue(track_uris)
+            
             is_playing = sp.current_playback()['is_playing']
             return jsonify({'success': True, 'is_playing': is_playing}), 200
         except spotipy.exceptions.SpotifyException as e:
             print(f"Error starting playback: {e}")
             return jsonify({'error': 'Error starting playback'}), 500
-    else:
-        print("No tracks found for the selected artists.")
-        return jsonify({'error': 'No tracks found for the selected artists.'}), 400
+
+
 
 
 @app.route('/current_track')
