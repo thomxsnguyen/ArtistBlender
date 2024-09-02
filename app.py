@@ -24,11 +24,16 @@ def get_token():
     if not token_info:
         return None
 
+    token_info = sp_oauth.get_cached_token()
+    if not token_info:
+        return None
+
     if sp_oauth.is_token_expired(token_info):
         token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
         session['token_info'] = token_info
 
     return token_info['access_token']
+
 
 @app.route('/')
 def login():
@@ -43,7 +48,7 @@ def callback():
     if not code:
         return "Authorization code not found", 400
 
-    token_info = sp_oauth.get_access_token(code)
+    token_info = sp_oauth.get_access_token(code, as_dict=False)
     session['token_info'] = token_info
 
     sp = commands.get_spotify_client(sp_oauth)
@@ -57,6 +62,7 @@ def callback():
     }
 
     return redirect('/select_artists')
+
 
 @app.route('/select_artists')
 def select_artists():
@@ -94,14 +100,6 @@ def shuffle():
 
     sp = spotipy.Spotify(auth=token)
 
-    # Get the current playback information
-    playback_info = sp.current_playback()
-
-    if not playback_info or not playback_info['device']:
-        return jsonify({'error': 'No active devices found. Please open Spotify on the device you are using.'}), 400
-
-    device_id = playback_info['device']['id']  # Use the current device's ID
-
     all_tracks = []
 
     # Function to fetch albums and tracks concurrently
@@ -125,17 +123,40 @@ def shuffle():
         track_uris = [track['uri'] for track in all_tracks]
 
         try:
-            current_playback = sp.current_playback()
-            if current_playback is None or not current_playback['is_playing']:
-                sp.start_playback(device_id=device_id, uris=track_uris)
-            else:
-                sp.add_to_queue(track_uris)
-            
-            is_playing = sp.current_playback()['is_playing']
-            return jsonify({'success': True, 'is_playing': is_playing}), 200
+            # Check if there is an active device
+            devices = sp.devices()
+            if not devices['devices']:
+                return jsonify({'error': 'No active device found'}), 400
+
+            # Get the first active device
+            device_id = devices['devices'][0]['id']
+
+            # Start playback with the first track
+            sp.start_playback(device_id=device_id, uris=[track_uris[0]])
+
+            # Add the rest of the tracks to the queue with retry mechanism
+            for track_uri in track_uris[1:]:
+                retries = 5
+                for i in range(retries):
+                    try:
+                        sp.add_to_queue(track_uri, device_id=device_id)
+                        break
+                    except spotipy.exceptions.SpotifyException as e:
+                        if e.http_status == 429:
+                            retry_after = int(e.headers.get("Retry-After", 1))
+                            print(f"Rate limited. Retrying after {retry_after} seconds.")
+                            time.sleep(retry_after)
+                        else:
+                            raise e
+
+            return jsonify({'success': True}), 200
         except spotipy.exceptions.SpotifyException as e:
-            print(f"Error starting playback: {e}")
-            return jsonify({'error': 'Error starting playback'}), 500
+            print(f"Error adding tracks to queue: {e}")
+            return jsonify({'error': 'Error adding tracks to queue'}), 500
+    else:
+        print("No tracks found for the selected artists.")
+        return jsonify({'error': 'No tracks found for the selected artists.'}), 400
+
 
 
 
