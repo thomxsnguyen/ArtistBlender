@@ -5,6 +5,7 @@ from spotipy.oauth2 import SpotifyOAuth
 from flask import Flask, redirect, request, session, render_template, jsonify
 import commands as commands  
 import concurrent.futures
+import time
 
 app = Flask(__name__)
 app.secret_key = config.CLIENT_SECRET
@@ -87,6 +88,15 @@ def search_artists():
 
     return {'artists': [{'id': artist['id'], 'name': artist['name']} for artist in artists]}
 
+def get_all_albums(sp, artist_id):
+    albums = []
+    results = sp.artist_albums(artist_id, album_type='album,single,compilation')
+    albums.extend(results['items'])
+    while results['next']:
+        results = sp.next(results)
+        albums.extend(results['items'])
+    return albums
+
 @app.route('/shuffle', methods=['POST'])
 def shuffle():
     selected_artist_ids = request.form.getlist('artists')
@@ -99,66 +109,38 @@ def shuffle():
         return redirect('/')
 
     sp = spotipy.Spotify(auth=token)
+    
+    devices = sp.devices()
+    if not devices['devices']:
+        return jsonify({'error': 'No active devices found. Please open Spotify on one of your devices.'}), 400
+
+    device_id = devices['devices'][0]['id']
 
     all_tracks = []
-
-    # Function to fetch albums and tracks concurrently
-    def fetch_tracks_for_artist(artist_id):
-        artist_tracks = []
-        albums = sp.artist_albums(artist_id, album_type='album,single', country='US')['items']
-        album_ids = [album['id'] for album in albums]
-        for album_id in album_ids:
-            album_tracks = sp.album_tracks(album_id)['items']
-            artist_tracks.extend(album_tracks)
-        return artist_tracks
-
-    # Use concurrent.futures to fetch tracks concurrently
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = [executor.submit(fetch_tracks_for_artist, artist_id) for artist_id in selected_artist_ids]
-        for future in concurrent.futures.as_completed(futures):
-            all_tracks.extend(future.result())
+    for artist_id in selected_artist_ids:
+        try:
+            albums = get_all_albums(sp, artist_id)
+            for album in albums:
+                tracks = sp.album_tracks(album['id'])['items']
+                all_tracks.extend(tracks)
+        except spotipy.exceptions.SpotifyException as e:
+            print(f"Error retrieving albums or tracks for artist {artist_id}: {e}")
 
     if all_tracks:
         random.shuffle(all_tracks)
-        track_uris = [track['uri'] for track in all_tracks]
+        track_uris = [track['uri'] for track in all_tracks[:min(25, len(all_tracks))]]
 
         try:
-            # Check if there is an active device
-            devices = sp.devices()
-            if not devices['devices']:
-                return jsonify({'error': 'No active device found'}), 400
-
-            # Get the first active device
-            device_id = devices['devices'][0]['id']
-
-            # Start playback with the first track
-            sp.start_playback(device_id=device_id, uris=[track_uris[0]])
-
-            # Add the rest of the tracks to the queue with retry mechanism
-            for track_uri in track_uris[1:]:
-                retries = 5
-                for i in range(retries):
-                    try:
-                        sp.add_to_queue(track_uri, device_id=device_id)
-                        break
-                    except spotipy.exceptions.SpotifyException as e:
-                        if e.http_status == 429:
-                            retry_after = int(e.headers.get("Retry-After", 1))
-                            print(f"Rate limited. Retrying after {retry_after} seconds.")
-                            time.sleep(retry_after)
-                        else:
-                            raise e
-
-            return jsonify({'success': True}), 200
+            sp.start_playback(device_id=device_id, uris=track_uris)
+           
+            is_playing = sp.current_playback()['is_playing']
+            return jsonify({'success': True, 'is_playing': is_playing}), 200
         except spotipy.exceptions.SpotifyException as e:
-            print(f"Error adding tracks to queue: {e}")
-            return jsonify({'error': 'Error adding tracks to queue'}), 500
+            print(f"Error starting playback: {e}")
+            return jsonify({'error': 'Error starting playback'}), 500
     else:
         print("No tracks found for the selected artists.")
         return jsonify({'error': 'No tracks found for the selected artists.'}), 400
-
-
-
 
 
 @app.route('/current_track')
