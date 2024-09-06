@@ -138,8 +138,14 @@ function toggleArtist(id, name, isChecked) {
         if (!selectedArtists.some(artist => artist.id === id)) {
             selectedArtists.push({ id, name });
         }
+        // Hide top artists when an artist is selected
+        document.getElementById('topArtists').style.display = 'none';
     } else {
         selectedArtists = selectedArtists.filter(artist => artist.id !== id);
+        // Show top artists if no artists are selected
+        if (selectedArtists.length === 0) {
+            document.getElementById('topArtists').style.display = 'flex';
+        }
     }
 
     updateHiddenInputs();
@@ -155,6 +161,7 @@ function toggleArtist(id, name, isChecked) {
         shuffleButton.classList.remove('visible');
     }
 }
+
 
 function updateHiddenInputs() {
     const hiddenInputs = document.getElementById('hiddenInputs');
