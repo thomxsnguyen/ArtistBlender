@@ -140,7 +140,7 @@ def shuffle():
             sp.start_playback(device_id=device_id, uris=track_uris)
            
             is_playing = sp.current_playback()['is_playing']
-            return jsonify({'success': True, 'is_playing': is_playing}), 200
+            return jsonify({'success': True, 'is_playing': is_playing, 'reset_search': True}), 200
         except spotipy.exceptions.SpotifyException as e:
             print(f"Error starting playback: {e}")
             return jsonify({'error': 'Error starting playback'}), 500
@@ -237,6 +237,19 @@ def play_track():
     except spotipy.exceptions.SpotifyException as e:
         print(f"Error resuming playback: {e}")
         return {'error': 'Failed to resume playback'}, 500
+    
+@app.route('/top_artists')
+def top_artists():
+    token = get_token()
+    if not token:
+        return {'error': 'User not logged in'}, 401
+
+    sp = spotipy.Spotify(auth=token)
+    
+    results = sp.current_user_top_artists(limit=4, time_range='short_term')
+    top_artists = [{'name': artist['name'], 'image': artist['images'][0]['url']} for artist in results['items']]
+    
+    return jsonify(top_artists)
 
 if __name__ == '__main__':
     app.run(debug=True)

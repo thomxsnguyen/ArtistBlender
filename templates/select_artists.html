@@ -28,26 +28,18 @@
     <div id="searchContainer">
         <div class="search-bar">
             <input type="text" id="searchBar" onkeyup="searchArtists()" placeholder="Search for artists..." autocomplete="off">
+
         </div>
         <div id="artistList"></div>
     </div>
 
-    
-
     <div class="container">
     </div>
 
-    <form action="/shuffle" method="POST" onsubmit="return validateSelection()">
-        <div id="hiddenInputs"></div>
-        <!-- static/index.html -->
-        <button id="shuffleButton">Shuffle</button>
-    </form>
 
     <div class="center-album-cover">
         <img id="album-cover" src="" alt="Album cover">
     </div>
-
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
@@ -56,6 +48,14 @@
         <button id="playPauseButton" class="play" data-state="play"></button>
         <button id="nextButton" class="next"></button>
     </div>
+
+    <form action="/shuffle" method="POST" onsubmit="return validateSelection()">
+        <div id="hiddenInputs"></div>
+        <!-- static/index.html -->
+        <button id="shuffleButton">Shuffle</button>
+    </form>
+
+    <div id="loadingMessage" class="loading-message">Loading selected artist(s)...</div>
 
     <div class="footer">
         <span id="footer-track-info">Loading track info...</span>

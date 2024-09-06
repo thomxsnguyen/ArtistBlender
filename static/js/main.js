@@ -27,6 +27,10 @@ function shuffle() {
         return;
     }
 
+    // Show the loading message
+    const loadingMessage = document.getElementById('loadingMessage');
+    loadingMessage.style.display = 'block';
+
     fetch('/shuffle', {
         method: 'POST',
         body: new URLSearchParams(new FormData(document.querySelector('form')))
@@ -41,13 +45,23 @@ function shuffle() {
             }
             // Show the album cover after shuffle
             document.getElementById('album-cover').style.display = 'block';
+
+            if (data.reset_search) {
+                selectedArtists = [];
+                updateSelectedArtistsList();
+                document.getElementById('searchBar').value = '';
+            }
         } else {
             alert(data.error || 'Error shuffling tracks.');
         }
+        // Hide the loading message after shuffle is complete
+        loadingMessage.style.display = 'none';
     })
     .catch(error => {
         console.error('Error:', error);
         alert('An unexpected error occurred.');
+        // Hide the loading message in case of error
+        loadingMessage.style.display = 'none';
     });
 }
 
@@ -55,7 +69,6 @@ document.querySelector('form').onsubmit = function(event) {
     event.preventDefault();
     shuffle();
 };
-
 
 function updatePauseButtonState() {
     const pauseButtonIcon = document.querySelector('#playPauseButton i');
@@ -79,7 +92,6 @@ function updateAlbumCover(albumImageUrl) {
         }
     }
 }
-
 
 function searchArtists() {
     const query = document.getElementById('searchBar').value.trim();
@@ -181,6 +193,7 @@ function updateSelectedArtistsList() {
     searchBarInput.id = 'searchBar';
     searchBarInput.placeholder = 'Search for artists...';
     searchBarInput.onkeyup = searchArtists;
+    searchBarInput.autocomplete = 'off';  // Add this line
     searchBar.appendChild(searchBarInput);
 }
 
@@ -235,102 +248,123 @@ function togglePause() {
 
     if (isPlaying) {
         fetch('/pause')
-            .then(response => {
-                if (response.ok) {
-                    isPlaying = false;
-                    playPauseButton.setAttribute('data-state', 'play');
-                    playPauseButton.classList.remove('pause');
-                    playPauseButton.classList.add('play');
-                    updatePauseButtonState();
-                } else {
-                    console.error('Failed to pause the track');
-                }
-            })
-            .catch(error => {
-                console.error('Error pausing track:', error);
-            });
-    } else {
-        fetch('/play')
-            .then(response => {
-                if (response.ok) {
-                    isPlaying = true;
-                    playPauseButton.setAttribute('data-state', 'pause');
-                    playPauseButton.classList.remove('play');
-                    playPauseButton.classList.add('pause');
-                    updatePauseButtonState();
-                } else {
-                    console.error('Failed to play the track');
-                }
-            })
-            .catch(error => {
-                console.error('Error playing track:', error);
-            });
-    }
-}
-
-function changePlayButtonToPlaying() {
-    document.getElementById('playPauseButton').src = "{{ url_for('static', filename='images/pause.png') }}";
-}
-
-function fetchCurrentTrack() {
-    fetch('/current_track')
-        .then(response => response.json())
-        .then(data => {
-            const albumCover = document.getElementById('album-cover');
-            const trackInfo = document.getElementById('footer-track-info');
-
-            if (data.error || !data.track_name) {
-                trackInfo.innerHTML = 'No track is currently playing';
+        .then(response => {
+            if (response.ok) {
                 isPlaying = false;
-            } else {
-                isPlaying = data.is_playing;
-                updateAlbumCover(data.album_image_url);
-                trackInfo.innerHTML = `Playing: <a href="${data.track_url}" target="_blank">${data.track_name} by ${data.artist_name}</a>`;
+                playPauseButton.setAttribute('data-state', 'play');
+                playPauseButton.classList.remove('pause');
+                playPauseButton.classList.add('play');
                 updatePauseButtonState();
+            } else {
+                console.error('Failed to pause the track');
             }
         })
         .catch(error => {
-            console.error('Error fetching current track:', error);
-            document.getElementById('footer-track-info').innerHTML = 'Error fetching current track';
-            isPlaying = false;
+            console.error('Error pausing track:', error);
+        });
+} else {
+    fetch('/play')
+        .then(response => {
+            if (response.ok) {
+                isPlaying = true;
+                playPauseButton.setAttribute('data-state', 'pause');
+                playPauseButton.classList.remove('play');
+                playPauseButton.classList.add('pause');
+                updatePauseButtonState();
+            } else {
+                console.error('Failed to play the track');
+            }
+        })
+        .catch(error => {
+            console.error('Error playing track:', error);
         });
 }
+}
 
-document.querySelector('form').onsubmit = function(event) {
-    event.preventDefault();
-    const formData = new FormData(this);
-    fetch('/shuffle', {
-        method: 'POST',
-        body: formData
-    })
+function changePlayButtonToPlaying() {
+document.getElementById('playPauseButton').src = "{{ url_for('static', filename='images/pause.png') }}";
+}
+
+function fetchCurrentTrack() {
+fetch('/current_track')
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
-            if (data.is_playing) {
-                changePlayButtonToPause();
-            } else {
-                changePlayButtonToPlay();
-            }
+        const albumCover = document.getElementById('album-cover');
+        const trackInfo = document.getElementById('footer-track-info');
+
+        if (data.error || !data.track_name) {
+            trackInfo.innerHTML = 'No track is currently playing';
+            isPlaying = false;
         } else {
-            alert(data.error || 'Error shuffling tracks.');
+            isPlaying = data.is_playing;
+            updateAlbumCover(data.album_image_url);
+            trackInfo.innerHTML = `Playing: <a href="${data.track_url}" target="_blank">${data.track_name} by ${data.artist_name}</a>`;
+            updatePauseButtonState();
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('An unexpected error occurred.');
+        console.error('Error fetching current track:', error);
+        document.getElementById('footer-track-info').innerHTML = 'Error fetching current track';
+        isPlaying = false;
     });
+}
+
+document.querySelector('form').onsubmit = function(event) {
+event.preventDefault();
+const formData = new FormData(this);
+fetch('/shuffle', {
+    method: 'POST',
+    body: formData
+})
+.then(response => response.json())
+.then(data => {
+    if (data.success) {
+        if (data.is_playing) {
+            changePlayButtonToPause();
+        } else {
+            changePlayButtonToPlay();
+        }
+    } else {
+        alert(data.error || 'Error shuffling tracks.');
+    }
+})
+.catch(error => {
+    console.error('Error:', error);
+    alert('An unexpected error occurred.');
+});
 };
 
+function displayTopArtists() {
+    fetch('/top_artists')
+        .then(response => response.json())
+        .then(artists => {
+            const topArtistsContainer = document.getElementById('topArtists');
+            artists.forEach(artist => {
+                const img = document.createElement('img');
+                img.src = artist.image;
+                img.alt = artist.name;
+                img.className = 'top-artist-image';
+                img.title = artist.name;
+                topArtistsContainer.appendChild(img);
+            });
+        })
+        .catch(error => console.error('Error fetching top artists:', error));
+}
+
+// Call this function when the page loads
+window.addEventListener('load', displayTopArtists);
+
+
 function changePlayButtonToPause() {
-    document.getElementById('playPauseButton').className = 'pause';
-    document.getElementById('playPauseButton').setAttribute('data-state', 'pause');
-    document.getElementById('playPauseButton').src = "{{ url_for('static', filename='images/pause.png') }}";
+document.getElementById('playPauseButton').className = 'pause';
+document.getElementById('playPauseButton').setAttribute('data-state', 'pause');
+document.getElementById('playPauseButton').src = "{{ url_for('static', filename='images/pause.png') }}";
 }
 
 function changePlayButtonToPlay() {
-    document.getElementById('playPauseButton').className = 'play';
-    document.getElementById('playPauseButton').setAttribute('data-state', 'play');
-    document.getElementById('playPauseButton').src = "{{ url_for('static', filename='images/play.png') }}";
+document.getElementById('playPauseButton').className = 'play';
+document.getElementById('playPauseButton').setAttribute('data-state', 'play');
+document.getElementById('playPauseButton').src = "{{ url_for('static', filename='images/play.png') }}";
 }
 
 setInterval(fetchCurrentTrack, 2000);
@@ -341,3 +375,4 @@ initializePlayState();
 document.getElementById('previousButton').addEventListener('click', previousTrack);
 document.getElementById('playPauseButton').addEventListener('click', togglePause);
 document.getElementById('nextButton').addEventListener('click', nextTrack);
+
