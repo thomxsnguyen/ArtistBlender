@@ -98,21 +98,19 @@ function updateAlbumCover(albumImageUrl) {
 
 function searchArtists() {
     const query = document.getElementById('searchBar').value.trim();
+    const artistList = document.getElementById('artistList');
     const topArtists = document.getElementById('topArtists');
 
     if (query === '') {
-        document.getElementById('artistList').innerHTML = '';
-        document.getElementById('artistList').style.display = 'none';
-        topArtists.classList.remove('hidden');
+        artistList.innerHTML = '';
+        artistList.style.display = 'none';
+        topArtists.style.display = 'flex';
         return;
     }
-
-    topArtists.classList.add('hidden');
 
     fetch(`/search_artists?query=${encodeURIComponent(query)}`)
         .then(response => response.json())
         .then(data => {
-            const artistList = document.getElementById('artistList');
             artistList.innerHTML = '';
 
             if (data.error) {
@@ -121,6 +119,7 @@ function searchArtists() {
             }
 
             artistList.style.display = 'block';
+            topArtists.style.display = 'none';
 
             data.artists.forEach(artist => {
                 const isSelected = selectedArtists.some(a => a.id === artist.id);
