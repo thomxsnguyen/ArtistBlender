@@ -318,15 +318,20 @@ a {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 40px;  /* Increased margin to lower the pictures */
 }
 
 .top-artist-image {
-    width: 100px;
-    height: 100px;
+    width: 150px;  /* Increased from 100px */
+    height: 150px;  /* Increased from 100px */
     border-radius: 50%;
-    margin: 0 10px;
+    margin: 0 15px;  /* Increased margin between images */
     object-fit: cover;
+    transition: transform 0.3s ease;  /* Added smooth transition for hover effect */
+}
+
+.top-artist-image:hover {
+    transform: scale(1.1);  /* Added hover effect to slightly enlarge on hover */
 }
 
 .hidden {
