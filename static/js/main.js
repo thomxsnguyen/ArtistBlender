@@ -80,27 +80,34 @@ function updatePauseButtonState() {
 function updateAlbumCover(albumImageUrl) {
     const albumCover = document.getElementById('album-cover');
     const playbackControls = document.querySelector('.playback-controls');
+    const topArtists = document.getElementById('topArtists');
 
     if (albumCover && playbackControls) {
         if (albumImageUrl) {
             albumCover.src = albumImageUrl;
             albumCover.style.display = 'block';   // Show album cover
             playbackControls.style.display = 'flex';  // Show playback controls
+            topArtists.classList.add('hidden');  // Hide top artists
         } else {
             albumCover.style.display = 'none';    // Hide album cover
             playbackControls.style.display = 'none';  // Hide playback controls
+            topArtists.classList.remove('hidden');  // Show top artists
         }
     }
 }
 
 function searchArtists() {
     const query = document.getElementById('searchBar').value.trim();
+    const topArtists = document.getElementById('topArtists');
 
     if (query === '') {
         document.getElementById('artistList').innerHTML = '';
         document.getElementById('artistList').style.display = 'none';
+        topArtists.classList.remove('hidden');
         return;
     }
+
+    topArtists.classList.add('hidden');
 
     fetch(`/search_artists?query=${encodeURIComponent(query)}`)
         .then(response => response.json())
@@ -132,7 +139,6 @@ function searchArtists() {
             console.error('Error searching artists:', error);
         });
 }
-
 function toggleArtist(id, name, isChecked) {
     if (isChecked) {
         if (!selectedArtists.some(artist => artist.id === id)) {
@@ -293,53 +299,32 @@ document.getElementById('playPauseButton').src = "{{ url_for('static', filename=
 }
 
 function fetchCurrentTrack() {
-fetch('/current_track')
-    .then(response => response.json())
-    .then(data => {
-        const albumCover = document.getElementById('album-cover');
-        const trackInfo = document.getElementById('footer-track-info');
+    fetch('/current_track')
+        .then(response => response.json())
+        .then(data => {
+            const albumCover = document.getElementById('album-cover');
+            const trackInfo = document.getElementById('footer-track-info');
+            const topArtists = document.getElementById('topArtists');
 
-        if (data.error || !data.track_name) {
-            trackInfo.innerHTML = 'No track is currently playing';
+            if (data.error || !data.track_name) {
+                trackInfo.innerHTML = 'No track is currently playing';
+                isPlaying = false;
+                topArtists.classList.remove('hidden');
+            } else {
+                isPlaying = data.is_playing;
+                updateAlbumCover(data.album_image_url);
+                trackInfo.innerHTML = `Playing: <a href="${data.track_url}" target="_blank">${data.track_name} by ${data.artist_name}</a>`;
+                updatePauseButtonState();
+                topArtists.classList.add('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching current track:', error);
+            document.getElementById('footer-track-info').innerHTML = 'Error fetching current track';
             isPlaying = false;
-        } else {
-            isPlaying = data.is_playing;
-            updateAlbumCover(data.album_image_url);
-            trackInfo.innerHTML = `Playing: <a href="${data.track_url}" target="_blank">${data.track_name} by ${data.artist_name}</a>`;
-            updatePauseButtonState();
-        }
-    })
-    .catch(error => {
-        console.error('Error fetching current track:', error);
-        document.getElementById('footer-track-info').innerHTML = 'Error fetching current track';
-        isPlaying = false;
-    });
+        });
 }
 
-document.querySelector('form').onsubmit = function(event) {
-event.preventDefault();
-const formData = new FormData(this);
-fetch('/shuffle', {
-    method: 'POST',
-    body: formData
-})
-.then(response => response.json())
-.then(data => {
-    if (data.success) {
-        if (data.is_playing) {
-            changePlayButtonToPause();
-        } else {
-            changePlayButtonToPlay();
-        }
-    } else {
-        alert(data.error || 'Error shuffling tracks.');
-    }
-})
-.catch(error => {
-    console.error('Error:', error);
-    alert('An unexpected error occurred.');
-});
-};
 
 function displayTopArtists() {
     fetch('/top_artists')

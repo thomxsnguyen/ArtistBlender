@@ -329,6 +329,11 @@ a {
     object-fit: cover;
 }
 
+.hidden {
+    display: none !important;
+}
+
+
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
