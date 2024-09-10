@@ -85,16 +85,17 @@ function updateAlbumCover(albumImageUrl) {
     if (albumCover && playbackControls) {
         if (albumImageUrl) {
             albumCover.src = albumImageUrl;
-            albumCover.style.display = 'block';   // Show album cover
-            playbackControls.style.display = 'flex';  // Show playback controls
-            topArtists.classList.add('hidden');  // Hide top artists
+            albumCover.style.display = 'block';
+            playbackControls.style.display = 'flex';
+            topArtists.style.display = 'none';  // Hide top artists
         } else {
-            albumCover.style.display = 'none';    // Hide album cover
-            playbackControls.style.display = 'none';  // Hide playback controls
-            topArtists.classList.remove('hidden');  // Show top artists
+            albumCover.style.display = 'none';
+            playbackControls.style.display = 'none';
+            topArtists.style.display = 'flex';  // Show top artists
         }
     }
 }
+
 
 function searchArtists() {
     const query = document.getElementById('searchBar').value.trim();
@@ -306,7 +307,7 @@ function fetchCurrentTrack() {
             const topArtists = document.getElementById('topArtists');
 
             if (data.error || !data.track_name) {
-                trackInfo.innerHTML = 'No track is currently playing';
+                trackInfo.innerHTML = 'Please open spotify on one of your devices.';
                 isPlaying = false;
                 topArtists.classList.remove('hidden');
             } else {
