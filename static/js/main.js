@@ -20,16 +20,16 @@ function initializePlayState() {
 }
 
 function shuffle() {
-    const selectedArtistIds = Array.from(document.querySelectorAll('input[name="artists"]')).map(input => input.value);
-
-    if (selectedArtistIds.length === 0) {
-        alert('Please select at least one artist before shuffling.');
+    const shuffleButton = document.getElementById('shuffleButton');
+    
+    if (selectedArtists.length === 0) {
+        showPopup();
         return;
     }
 
-    // Show the loading message
-    const loadingMessage = document.getElementById('loadingMessage');
-    loadingMessage.style.display = 'block';
+    shuffleButton.textContent = 'Shuffling selected artists...';
+    shuffleButton.classList.add('loading');
+    shuffleButton.disabled = true;
 
     fetch('/shuffle', {
         method: 'POST',
@@ -38,32 +38,22 @@ function shuffle() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            if (data.is_playing) {
-                changePlayButtonToPause();
-            } else {
-                changePlayButtonToPlay();
-            }
-            // Show the album cover after shuffle
-            document.getElementById('album-cover').style.display = 'block';
-
-            if (data.reset_search) {
-                selectedArtists = [];
-                updateSelectedArtistsList();
-                document.getElementById('searchBar').value = '';
-            }
+            // Handle success
         } else {
             alert(data.error || 'Error shuffling tracks.');
         }
-        // Hide the loading message after shuffle is complete
-        loadingMessage.style.display = 'none';
     })
     .catch(error => {
         console.error('Error:', error);
         alert('An unexpected error occurred.');
-        // Hide the loading message in case of error
-        loadingMessage.style.display = 'none';
+    })
+    .finally(() => {
+        shuffleButton.textContent = 'Shuffle';
+        shuffleButton.classList.remove('loading');
+        shuffleButton.disabled = false;
     });
 }
+
 
 document.querySelector('form').onsubmit = function(event) {
     event.preventDefault();

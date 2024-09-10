@@ -177,6 +177,11 @@ h1 {
     font-weight: bold;
 }
 
+#shuffleButton.loading {
+    background-color: #1DB954;
+    cursor: not-allowed;
+}
+
 #shuffleButton.visible {
     visibility: visible;
 }
