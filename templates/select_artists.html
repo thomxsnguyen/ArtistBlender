@@ -1,70 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Select Artists</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
     <header>
-        <div class="logo-container">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Spotify_icon.svg" alt="Spotify Logo"> 
-            <h1>ArtistBlender</h1>
-        </div>
-        
-        {% if user_profile and user_profile.profile_image %}
-        <div class="user-profile">
-            <img src="{{ user_profile.profile_image }}" alt="{{ user_profile.display_name }}" class="profile-pic">
-            <span>{{ user_profile.display_name }}</span>
-        </div>
-        {% endif %}
+      <div class="logo-container">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/8/84/Spotify_icon.svg"
+          alt="Spotify Logo"
+        />
+        <h1>ArtistBlender</h1>
+      </div>
+
+      {% if user_profile and user_profile.profile_image %}
+      <div class="user-profile">
+        <img
+          src="{{ user_profile.profile_image }}"
+          alt="{{ user_profile.display_name }}"
+          class="profile-pic"
+        />
+        <span>{{ user_profile.display_name }}</span>
+      </div>
+      {% endif %}
     </header>
     <div class="centered-heading">
-        ArtistBlender for Spotify
-        <p class="subtitle">Select your favorite artists and enjoy their shuffled songs</p>
+      ArtistBlender for Spotify
+      <p class="subtitle">
+        Select your favorite artists and enjoy their shuffled songs
+      </p>
     </div>
     <div id="searchContainer">
-        <div class="search-bar">
-            <input type="text" id="searchBar" onkeyup="searchArtists()" placeholder="Search for artists..." autocomplete="off">
-        </div>
-        <div id="topArtists" class="top-artists-container"></div>
-        <div id="artistList" class="artist-list-overlay"></div>
+      <div class="search-bar">
+        <input
+          type="text"
+          id="searchBar"
+          onkeyup="searchArtists()"
+          placeholder="Search for artists..."
+          autocomplete="off"
+        />
+      </div>
+      <div id="topArtists" class="top-artists-container"></div>
+      <div id="artistList" class="artist-list-overlay"></div>
     </div>
 
-    <div class="container">
-    </div>
-
+    <div class="container"></div>
 
     <div class="center-album-cover">
-        <img id="album-cover" src="" alt="Album cover">
+      <img id="album-cover" src="" alt="Album cover" />
     </div>
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
 
     <div class="playback-controls">
-        <button id="previousButton" class="previous"></button>
-        <button id="playPauseButton" class="play" data-state="play"></button>
-        <button id="nextButton" class="next"></button>
+      <button id="previousButton" class="previous"></button>
+      <button id="playPauseButton" class="play" data-state="play"></button>
+      <button id="nextButton" class="next"></button>
     </div>
 
     <form action="/shuffle" method="POST" onsubmit="return validateSelection()">
-        <div id="hiddenInputs"></div>
-        <button id="shuffleButton" onclick="shuffle()">Shuffle</button>
+      <div id="hiddenInputs"></div>
+      <button id="shuffleButton" onclick="shuffle()">Shuffle</button>
     </form>
 
-    <div id="loadingMessage" class="loading-message">Loading selected artist(s)...</div>
+    <div id="loadingMessage" class="loading-message">
+      Loading selected artist(s)...
+    </div>
 
     <div class="footer">
-        <span id="footer-track-info">Loading track info...</span>
+      <span id="footer-track-info">Loading track info...</span>
     </div>
 
     <div id="errorPopup" class="error-popup">
-        <p>Please select at least one artist before shuffling.</p>
-        <button onclick="closePopup()">OK</button>
+      <p>Please select at least one artist before shuffling.</p>
+      <button onclick="closePopup()">OK</button>
     </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-</body>
+  </body>
 </html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
