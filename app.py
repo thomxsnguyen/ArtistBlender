@@ -5,7 +5,6 @@ from spotipy.oauth2 import SpotifyOAuth
 from flask import Flask, redirect, request, session, render_template, jsonify
 import commands as commands  
 import concurrent.futures
-import time
 
 app = Flask(__name__)
 app.secret_key = config.CLIENT_SECRET
