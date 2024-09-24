@@ -259,13 +259,20 @@ button {
   bottom: 0;
   width: 100%;
   background-color: #000000;
-  color: white;
+  color: rgb(119, 119, 119);
   text-align: center;
-  padding: 10px 0;
+  padding: 20px 0;
+  font-weight: bold; /* Makes the text bolder */
+  font-size: 18px;
+}
+
+#footer-track-info {
+  font-weight: bold;
+  font-size: 18px;
 }
 
 a {
-  color: #1db954;
+  color: #ffffff;
   text-decoration: none;
 }
 
@@ -399,8 +406,6 @@ a {
 .top-artist-image:hover {
   transform: scale(1.1); /* Added hover effect to slightly enlarge on hover */
 }
-
-
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
