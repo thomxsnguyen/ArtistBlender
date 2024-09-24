@@ -91,13 +91,14 @@ function searchArtists() {
     const query = document.getElementById('searchBar').value.trim();
     const artistList = document.getElementById('artistList');
     const topArtists = document.getElementById('topArtists');
+    const albumCover = document.getElementById('album-cover');
 
-    if (query === '') {
+    if (query === '' && albumCover.style.display !== 'block') {
         artistList.innerHTML = '';
         artistList.style.display = 'none';
-        // Keep top artists hidden even when search bar is empty
+        topArtists.style.display = 'flex';
+    } else {
         topArtists.style.display = 'none';
-        return;
     }
 
     fetch(`/search_artists?query=${encodeURIComponent(query)}`)
