@@ -95,7 +95,8 @@ function searchArtists() {
     if (query === '') {
         artistList.innerHTML = '';
         artistList.style.display = 'none';
-        topArtists.style.display = 'flex';
+        // Keep top artists hidden even when search bar is empty
+        topArtists.style.display = 'none';
         return;
     }
 
@@ -129,6 +130,7 @@ function searchArtists() {
             console.error('Error searching artists:', error);
         });
 }
+
 function toggleArtist(id, name, isChecked) {
     if (isChecked) {
         if (!selectedArtists.some(artist => artist.id === id)) {
