@@ -34,6 +34,7 @@ def get_token():
     return token_info['access_token']
 
 def get_all_albums(sp, artist_id):
+    ''' Retrieves all the albums from the artists'''
     albums = []
     results = sp.artist_albums(artist_id, album_type='album,single,compilation', limit=50)
     albums.extend(results['items'])
@@ -43,6 +44,7 @@ def get_all_albums(sp, artist_id):
     return albums
 
 def get_tracks_from_albums(sp, albums):
+    '''Obtains all tracks from random album sleected'''
     all_tracks = []
     for album in albums:
         tracks = sp.album_tracks(album['id'])['items']
@@ -58,6 +60,7 @@ def login():
 
 @app.route('/callback')
 def callback():
+    ''' Gives program authorization code, program finds user's profile picture and username '''
     code = request.args.get('code')
     if not code:
         return "Authorization code not found", 400
@@ -79,12 +82,14 @@ def callback():
 
 @app.route('/select_artists')
 def select_artists():
+    ''' Retrieves user selected artists '''
     selected_artists = session.get('selected_artists', [])
     user_profile = session.get('user_profile', {})
     return render_template('select_artists.html', selected_artists=selected_artists, user_profile=user_profile)
 
 @app.route('/search_artists', methods=['GET'])
 def search_artists():
+    ''' Uses "select_artists" to retrieved the selected artists' songs and data'''
     query = request.args.get('query')
     if not query:
         return {'artists': []}, 200
@@ -102,6 +107,7 @@ def search_artists():
 
 @app.route('/shuffle', methods=['POST'])
 def shuffle():
+    ''' Goes through all_tracks given by the "get_tracks_from_album" function, shuffles and plays one random song '''
     selected_artist_ids = request.form.getlist('artists')
 
     if not selected_artist_ids:
@@ -150,6 +156,7 @@ def shuffle():
 
 @app.route('/current_track')
 def current_track():
+    ''' Obtains current track'''
     token = get_token()
     if not token:
         return {'error': 'User not logged in'}, 401
@@ -179,6 +186,7 @@ def current_track():
 
 @app.route('/previous')
 def previous_track():
+    '''Previous route '''
     token = get_token()
     if not token:
         return {'error': 'User not logged in'}, 401
@@ -194,6 +202,7 @@ def previous_track():
 
 @app.route('/next')
 def next_track():
+    ''' Next route '''
     token = get_token()
     if not token:
         return {'error': 'User not logged in'}, 401
@@ -209,6 +218,7 @@ def next_track():
 
 @app.route('/pause')
 def pause_track():
+    ''' Pause route'''
     token = get_token()
     if not token:
         return {'error': 'User not logged in'}, 401
