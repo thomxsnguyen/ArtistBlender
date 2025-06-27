@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { X, Sparkles } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
 import { spotifyApi } from "../utils/api";
 import type { Artist } from "../types";
 
@@ -16,178 +15,230 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
   onArtistsChange,
   onShuffle,
   isLoading,
-  showControls,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Artist[]>([]);
-  const [topArtists, setTopArtists] = useState<Artist[]>([]);
-  const [showResults, setShowResults] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout>();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    loadTopArtists();
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const loadTopArtists = async () => {
-    try {
-      const artists = await spotifyApi.getTopArtists();
-      setTopArtists(artists);
-    } catch (error) {
-      console.error("Error loading top artists:", error);
-    }
-  };
-
-  const handleSearch = async (query: string) => {
-    setSearchQuery(query);
-
-    if (query.trim() === "") {
-      setSearchResults([]);
-      setShowResults(false);
-      return;
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
     }
 
-    try {
-      const response = await spotifyApi.searchArtists(query);
-      setSearchResults(response.artists);
-      setShowResults(true);
-    } catch (error) {
-      console.error("Error searching artists:", error);
-      setSearchResults([]);
-    }
-  };
-
-  const toggleArtist = (artist: Artist) => {
-    const isSelected = selectedArtists.some((a) => a.id === artist.id);
-
-    if (isSelected) {
-      onArtistsChange(selectedArtists.filter((a) => a.id !== artist.id));
+    if (searchQuery.trim()) {
+      setIsSearching(true);
+      searchTimeoutRef.current = setTimeout(async () => {
+        try {
+          const results = await spotifyApi.searchArtists(searchQuery);
+          setSearchResults(results.artists);
+          setShowDropdown(true);
+        } catch (error) {
+          console.error("Search error:", error);
+          setSearchResults([]);
+        } finally {
+          setIsSearching(false);
+        }
+      }, 300);
     } else {
+      setSearchResults([]);
+      setShowDropdown(false);
+      setIsSearching(false);
+    }
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery]);
+
+  const handleArtistSelect = (artist: Artist) => {
+    if (!selectedArtists.some((a) => a.id === artist.id)) {
       onArtistsChange([...selectedArtists, artist]);
     }
-
-    // Clear search after selection
     setSearchQuery("");
-    setSearchResults([]);
-    setShowResults(false);
+    setShowDropdown(false);
   };
 
-  const removeArtist = (artistId: string) => {
+  const handleRemoveArtist = (artistId: string) => {
     onArtistsChange(selectedArtists.filter((a) => a.id !== artistId));
   };
 
-  const shouldShowTopArtists =
-    !showControls && searchQuery === "" && !showResults;
+  const clearSearch = () => {
+    setSearchQuery("");
+    setShowDropdown(false);
+    setSearchResults([]);
+  };
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto px-4 animate-slide-up">
-      {/* Search Bar with Selected Artists Pills */}
-      <div className="relative group">
-        <div className="absolute inset-0 bg-gradient-to-r from-spotify-glass to-spotify-glass backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl group-hover:shadow-3xl transition-all duration-500"></div>
-        <div className="absolute -inset-1 bg-gradient-to-r from-spotify-green/20 via-blue-500/20 to-purple-500/20 rounded-2xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <div className="relative flex flex-wrap items-center p-4 min-h-[64px] overflow-x-auto overflow-y-hidden">
-          {selectedArtists.map((artist, index) => (
-            <div
-              key={artist.id}
-              className="inline-flex items-center bg-gradient-to-r from-spotify-green to-spotify-green-light text-white px-4 py-2 m-1 rounded-full text-sm font-medium cursor-pointer shadow-lg shadow-spotify-green/30 hover:shadow-spotify-green/60 transition-all duration-300 hover:scale-110 animate-scale-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
+    <div className="max-w-4xl mx-auto">
+      {/* Search Section */}
+      <div className="relative mb-8" ref={dropdownRef}>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg
+              className="h-5 w-5 text-spotify-text-subdued"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <Sparkles size={14} className="mr-2 animate-pulse" />
-              <span className="mr-2">{artist.name}</span>
-              <button
-                onClick={() => removeArtist(artist.id)}
-                className="w-5 h-5 rounded-full bg-white/20 hover:bg-red-500 text-white hover:text-white transition-all duration-200 flex items-center justify-center hover:rotate-90"
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search for artists..."
+            className="w-full pl-12 pr-12 py-4 bg-spotify-dark-gray text-white placeholder-spotify-text-subdued rounded-full border border-spotify-border-gray focus:outline-none focus:border-spotify-border-gray selection:bg-spotify-green selection:text-black transition-all duration-200 text-lg"
+          />
+          {searchQuery && (
+            <button
+              onClick={clearSearch}
+              className="absolute inset-y-0 right-0 pr-4 flex items-center text-spotify-text-subdued hover:text-white transition-colors"
+            >
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                <X size={12} />
-              </button>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          )}
+          {isSearching && (
+            <div className="absolute inset-y-0 right-12 flex items-center">
+              <div className="animate-spin rounded-full h-5 w-5 border-2 border-spotify-green border-t-transparent"></div>
             </div>
-          ))}
-
-          <div className="flex-1 min-w-[200px] relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Search for your favorite artists..."
-              className="w-full border-none bg-transparent text-white placeholder-gray-400 outline-none text-base pl-2 font-light focus:placeholder-transparent transition-all duration-300"
-              autoComplete="off"
-            />
-            {searchQuery === "" && (
-              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 animate-pulse">
-                <Sparkles size={16} />
-              </div>
-            )}
-          </div>
+          )}
         </div>
-      </div>
 
-      {/* Search Results Dropdown */}
-      {showResults && searchResults.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 z-50 animate-slide-up">
-          <div className="bg-spotify-glass backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl overflow-hidden max-h-80 overflow-y-auto">
+        {/* Search Results Dropdown */}
+        {showDropdown && searchResults.length > 0 && (
+          <div className="absolute top-full left-0 right-0 mt-2 bg-spotify-dark-gray border border-spotify-border-gray rounded-lg shadow-2xl max-h-80 overflow-y-auto z-50 animate-fade-in">
             {searchResults.map((artist, index) => (
-              <div
+              <button
                 key={artist.id}
-                onClick={() => toggleArtist(artist)}
-                className={`p-4 cursor-pointer text-white hover:bg-gradient-to-r hover:from-spotify-green hover:to-spotify-green-light transition-all duration-300 hover:scale-[1.02] hover:shadow-lg animate-fade-in ${
-                  index !== searchResults.length - 1
-                    ? "border-b border-white/10"
-                    : ""
-                }`}
-                style={{ animationDelay: `${index * 0.05}s` }}
+                onClick={() => handleArtistSelect(artist)}
+                className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-spotify-medium-gray transition-colors text-left"
+                style={{ animationDelay: `${index * 50}ms` }}
               >
-                <div className="flex items-center group">
-                  <div className="w-2 h-2 bg-spotify-green rounded-full mr-3 opacity-60 group-hover:opacity-100 group-hover:animate-pulse transition-all duration-300"></div>
-                  <span className="font-medium group-hover:translate-x-1 transition-transform duration-200">
-                    {artist.name}
-                  </span>
-                  <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <div className="w-6 h-6 rounded-full bg-spotify-green/20 flex items-center justify-center">
-                      <span className="text-xs font-bold">+</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Top Artists (show when not in playback mode and no search) */}
-      {shouldShowTopArtists && topArtists.length > 0 && (
-        <div className="mt-12 animate-slide-up">
-          <h2 className="text-center text-2xl font-semibold text-white mb-8 animate-fade-in">
-            Your Top Artists
-          </h2>
-          <div className="flex justify-center flex-wrap gap-8">
-            {topArtists.map((artist, index) => (
-              <div
-                key={artist.id}
-                onClick={() => toggleArtist(artist)}
-                className="group cursor-pointer transition-all duration-500 hover:scale-110 animate-scale-in"
-                style={{ animationDelay: `${index * 0.15}s` }}
-              >
-                <div className="relative">
-                  {artist.image && (
-                    <div className="relative">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-spotify-green via-blue-500 to-purple-500 rounded-full opacity-0 group-hover:opacity-30 transition-opacity duration-500 blur-sm animate-pulse"></div>
-                      <img
-                        src={artist.image}
-                        alt={artist.name}
-                        className="relative w-36 h-36 rounded-full object-cover ring-4 ring-white/20 group-hover:ring-spotify-green transition-all duration-500 shadow-2xl group-hover:shadow-spotify-green/50"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-spotify-green/30 via-transparent to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-300 shadow-lg">
-                          <Sparkles className="text-spotify-green w-5 h-5" />
-                        </div>
-                      </div>
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-spotify-green rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center animate-bounce">
-                        <span className="text-white text-xs font-bold">+</span>
-                      </div>
-                    </div>
+                <div className="w-12 h-12 rounded-full bg-spotify-medium-gray flex items-center justify-center overflow-hidden">
+                  {artist.image ? (
+                    <img
+                      src={artist.image}
+                      alt={artist.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <svg
+                      className="w-6 h-6 text-spotify-text-subdued"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                    </svg>
                   )}
-                  <p className="text-center mt-4 text-sm font-medium text-gray-300 group-hover:text-white transition-colors duration-300 group-hover:transform group-hover:scale-105">
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-medium truncate">
                     {artist.name}
                   </p>
+                  <p className="text-spotify-text-subdued text-sm">Artist</p>
                 </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Selected Artists */}
+      {selectedArtists.length > 0 && (
+        <div className="mb-8 animate-fade-in-up">
+          <h3 className="text-lg font-semibold text-white mb-4">
+            Selected Artists
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {selectedArtists.map((artist, index) => (
+              <div
+                key={artist.id}
+                className="group relative bg-spotify-dark-gray hover:bg-spotify-medium-gray rounded-lg p-4 transition-all duration-300 hover:shadow-lg animate-scale-in"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="aspect-square rounded-lg bg-spotify-medium-gray mb-3 overflow-hidden">
+                  {artist.image ? (
+                    <img
+                      src={artist.image}
+                      alt={artist.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <svg
+                        className="w-12 h-12 text-spotify-text-subdued"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                      </svg>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveArtist(artist.id);
+                      }}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-red-500 hover:bg-red-600 text-white rounded-full p-2"
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <p className="text-white font-medium text-sm truncate">
+                  {artist.name}
+                </p>
+                <p className="text-spotify-text-subdued text-xs">Artist</p>
               </div>
             ))}
           </div>
@@ -196,47 +247,62 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
 
       {/* Shuffle Button */}
       {selectedArtists.length > 0 && (
-        <div className="flex justify-center mt-12 animate-scale-in">
-          <div className="relative group">
-            <div className="absolute -inset-2 bg-gradient-to-r from-spotify-green via-blue-500 to-purple-500 rounded-full blur-lg opacity-50 group-hover:opacity-75 transition-opacity duration-500 animate-pulse"></div>
-            <button
-              onClick={onShuffle}
-              disabled={isLoading}
-              className={`relative px-10 py-5 text-lg font-bold text-white border-none rounded-full font-inter transition-all duration-500 shadow-2xl overflow-hidden ${
-                isLoading
-                  ? "bg-spotify-green cursor-not-allowed opacity-70"
-                  : "bg-gradient-to-r from-spotify-green to-spotify-green-light hover:shadow-spotify-green/70 hover:scale-110 cursor-pointer hover:from-spotify-green-light hover:to-spotify-green"
-              }`}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-              <div className="relative flex items-center">
-                {isLoading ? (
-                  <>
-                    <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin mr-3"></div>
-                    <span className="animate-pulse">
-                      Creating your perfect mix...
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="mr-3 w-5 h-5 animate-pulse" />
-                    <span className="group-hover:animate-bounce">
-                      Shuffle & Play
-                    </span>
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="ml-3 group-hover:translate-x-1 transition-transform duration-300"
-                    >
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </>
-                )}
+        <div className="text-center animate-fade-in-up animation-delay-300">
+          <button
+            onClick={onShuffle}
+            disabled={isLoading}
+            className="group relative bg-spotify-green hover:bg-spotify-green-hover text-black font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg hover:shadow-xl"
+          >
+            {isLoading ? (
+              <div className="flex items-center space-x-3">
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-black border-t-transparent"></div>
+                <span>Creating your mix...</span>
               </div>
-            </button>
+            ) : (
+              <div className="flex items-center space-x-3">
+                <svg
+                  className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" />
+                </svg>
+                <span>Shuffle & Play</span>
+              </div>
+            )}
+          </button>
+          <p className="text-spotify-text-subdued text-sm mt-3">
+            Create a personalized mix from {selectedArtists.length} selected
+            artist{selectedArtists.length !== 1 ? "s" : ""}
+          </p>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {selectedArtists.length === 0 && (
+        <div className="text-center py-12 animate-fade-in-up">
+          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-spotify-dark-gray flex items-center justify-center">
+            <svg
+              className="w-12 h-12 text-spotify-text-subdued"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
           </div>
+          <h3 className="text-xl font-semibold text-white mb-2">
+            Start by searching for artists
+          </h3>
+          <p className="text-spotify-text-subdued max-w-md mx-auto">
+            Find your favorite artists and create a personalized music mix.
+            Search above to get started.
+          </p>
         </div>
       )}
     </div>

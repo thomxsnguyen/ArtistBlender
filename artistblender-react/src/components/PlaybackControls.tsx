@@ -1,5 +1,4 @@
 import React from "react";
-import { Play, Pause, SkipBack, SkipForward } from "lucide-react";
 
 interface PlaybackControlsProps {
   isPlaying: boolean;
@@ -11,53 +10,42 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
   onPlaybackAction,
 }) => {
   return (
-    <div className="flex justify-center items-center mt-12 space-x-8 animate-slide-up">
-      <div className="relative group">
-        <div className="absolute inset-0 bg-spotify-glass backdrop-blur-xl rounded-full border border-white/20 group-hover:border-spotify-green/50 transition-all duration-300"></div>
-        <div className="absolute -inset-1 bg-gradient-to-r from-spotify-green/20 to-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-60 transition-opacity duration-500"></div>
-        <button
-          onClick={() => onPlaybackAction("previous")}
-          className="relative w-16 h-16 rounded-full text-white hover:text-spotify-green transition-all duration-300 flex items-center justify-center hover:scale-125 active:scale-90 group-hover:rotate-12"
-          aria-label="Previous track"
-        >
-          <SkipBack size={24} className="group-hover:animate-wiggle" />
-        </button>
-      </div>
+    <div className="flex items-center justify-center space-x-6 mb-8 animate-fade-in-up animation-delay-200">
+      {/* Previous Button */}
+      <button
+        onClick={() => onPlaybackAction("previous")}
+        className="text-spotify-text-subdued hover:text-white transition-colors duration-200 p-2 hover:bg-spotify-medium-gray rounded-full"
+      >
+        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+        </svg>
+      </button>
 
-      <div className="relative group">
-        <div className="absolute -inset-3 bg-gradient-to-r from-spotify-green via-blue-500 to-spotify-green-light rounded-full blur-xl opacity-40 group-hover:opacity-70 transition-opacity duration-500 animate-pulse-slow"></div>
-        <div className="absolute -inset-1 bg-gradient-to-r from-spotify-green to-spotify-green-light rounded-full opacity-80 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
-        <button
-          onClick={() => onPlaybackAction(isPlaying ? "pause" : "play")}
-          className="relative w-24 h-24 rounded-full bg-gradient-to-r from-spotify-green to-spotify-green-light text-white hover:scale-125 active:scale-95 transition-all duration-400 flex items-center justify-center shadow-2xl shadow-spotify-green/60 hover:shadow-spotify-green/80 group-hover:animate-heartbeat"
-          aria-label={isPlaying ? "Pause" : "Play"}
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-full transform rotate-45 group-hover:rotate-[225deg] transition-transform duration-1000"></div>
-          {isPlaying ? (
-            <Pause
-              size={32}
-              className="relative z-10 group-hover:animate-pulse"
-            />
-          ) : (
-            <Play
-              size={32}
-              className="ml-1 relative z-10 group-hover:animate-bounce"
-            />
-          )}
-        </button>
-      </div>
+      {/* Play/Pause Button */}
+      <button
+        onClick={() => onPlaybackAction(isPlaying ? "pause" : "play")}
+        className="bg-white hover:bg-gray-200 text-black rounded-full p-4 transition-all duration-200 hover:scale-105 shadow-lg"
+      >
+        {isPlaying ? (
+          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+          </svg>
+        ) : (
+          <svg className="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        )}
+      </button>
 
-      <div className="relative group">
-        <div className="absolute inset-0 bg-spotify-glass backdrop-blur-xl rounded-full border border-white/20 group-hover:border-spotify-green/50 transition-all duration-300"></div>
-        <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-spotify-green/20 rounded-full blur-md opacity-0 group-hover:opacity-60 transition-opacity duration-500"></div>
-        <button
-          onClick={() => onPlaybackAction("next")}
-          className="relative w-16 h-16 rounded-full text-white hover:text-spotify-green transition-all duration-300 flex items-center justify-center hover:scale-125 active:scale-90 group-hover:-rotate-12"
-          aria-label="Next track"
-        >
-          <SkipForward size={24} className="group-hover:animate-wiggle" />
-        </button>
-      </div>
+      {/* Next Button */}
+      <button
+        onClick={() => onPlaybackAction("next")}
+        className="text-spotify-text-subdued hover:text-white transition-colors duration-200 p-2 hover:bg-spotify-medium-gray rounded-full"
+      >
+        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+        </svg>
+      </button>
     </div>
   );
 };

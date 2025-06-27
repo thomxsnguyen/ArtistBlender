@@ -6,7 +6,6 @@ import { PlaybackControls } from "./components/PlaybackControls";
 import { Footer } from "./components/Footer";
 import { ErrorPopup } from "./components/ErrorPopup";
 import { LoadingMessage } from "./components/LoadingMessage";
-import { ParticleSystem } from "./components/ParticleSystem";
 import { spotifyApi } from "./utils/api";
 import type { Artist, Track, UserProfile } from "./types";
 
@@ -17,22 +16,42 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showControls, setShowControls] = useState(false);
+  const [isAppLoaded, setIsAppLoaded] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
+  const [splashExiting, setSplashExiting] = useState(false);
 
   useEffect(() => {
-    initializeApp();
-  }, []);
+    // App loading sequence - Enhanced with slide-down animation
+    const loadSequence = async () => {
+      // Show splash for 2.5 seconds
+      setTimeout(() => {
+        setIsAppLoaded(true);
+      }, 1500);
 
-  const initializeApp = async () => {
-    try {
-      const trackData = await spotifyApi.getCurrentTrack();
-      if ("show_controls" in trackData && trackData.show_controls) {
-        setCurrentTrack(trackData as Track);
-        setShowControls(true);
+      // Start exit animation
+      setTimeout(() => {
+        setSplashExiting(true);
+      }, 2800);
+
+      // Hide splash after animation completes
+      setTimeout(() => {
+        setShowSplash(false);
+      }, 3800);
+
+      // Initialize app data
+      try {
+        const trackData = await spotifyApi.getCurrentTrack();
+        if ("show_controls" in trackData && trackData.show_controls) {
+          setCurrentTrack(trackData as Track);
+          setShowControls(true);
+        }
+      } catch (error) {
+        console.error("Error initializing app:", error);
       }
-    } catch (error) {
-      console.error("Error initializing app:", error);
-    }
-  };
+    };
+
+    loadSequence();
+  }, []);
 
   const handleShuffle = async () => {
     if (selectedArtists.length === 0) {
@@ -46,11 +65,17 @@ function App() {
       const result = await spotifyApi.shuffle(artistIds);
 
       if (result.success) {
-        // Clear selected artists after successful shuffle
         setSelectedArtists([]);
-        // Refresh current track info
-        setTimeout(() => {
-          initializeApp();
+        setTimeout(async () => {
+          try {
+            const trackData = await spotifyApi.getCurrentTrack();
+            if ("show_controls" in trackData && trackData.show_controls) {
+              setCurrentTrack(trackData as Track);
+              setShowControls(true);
+            }
+          } catch (error) {
+            console.error("Error refreshing track:", error);
+          }
         }, 1000);
       } else {
         setError(result.error || "Error shuffling tracks.");
@@ -81,105 +106,201 @@ function App() {
           await spotifyApi.nextTrack();
           break;
       }
-      // Refresh track info after playback action
-      setTimeout(() => {
-        initializeApp();
+      setTimeout(async () => {
+        try {
+          const trackData = await spotifyApi.getCurrentTrack();
+          if ("show_controls" in trackData && trackData.show_controls) {
+            setCurrentTrack(trackData as Track);
+            setShowControls(true);
+          }
+        } catch (error) {
+          console.error("Error refreshing track:", error);
+        }
       }, 500);
     } catch (error) {
       console.error(`Error with ${action} action:`, error);
     }
   };
 
-  return (
-    <div className="min-h-screen text-white font-inter relative overflow-hidden">
-      {/* Background animated elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-spotify-green opacity-10 rounded-full blur-3xl animate-float neon-glow"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500 opacity-10 rounded-full blur-3xl animate-float-delay neon-glow"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-purple-500 opacity-5 rounded-full blur-3xl animate-pulse-slow"></div>
-
-        {/* Floating particles */}
-        <div className="absolute top-32 left-1/4 w-2 h-2 bg-spotify-green rounded-full opacity-60 animate-bounce-subtle"></div>
-        <div
-          className="absolute top-64 right-1/4 w-3 h-3 bg-blue-400 rounded-full opacity-40 animate-bounce-subtle"
-          style={{ animationDelay: "1s" }}
-        ></div>
-        <div
-          className="absolute bottom-32 left-1/3 w-1 h-1 bg-purple-400 rounded-full opacity-70 animate-bounce-subtle"
-          style={{ animationDelay: "2s" }}
-        ></div>
-        <div
-          className="absolute bottom-48 right-1/3 w-2 h-2 bg-pink-400 rounded-full opacity-50 animate-bounce-subtle"
-          style={{ animationDelay: "0.5s" }}
-        ></div>
-
-        {/* Gradient overlay */}
-        <div
-          className="absolute inset-0 bg-gradient-to-br from-transparent via-spotify-green/5 to-blue-500/5 animate-gradient-shift"
-          style={{ backgroundSize: "400% 400%" }}
-        ></div>
-
-        {/* Particle System */}
-        <ParticleSystem />
-      </div>
-
-      <Header userProfile={userProfile} />
-
-      <div className="flex flex-col items-center relative z-10">
-        <div className="text-center mt-16 mb-12">
-          <div className="mb-6 animate-scale-in">
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-spotify-green to-spotify-green-light rounded-full mb-6 shadow-2xl shadow-spotify-green/40 animate-glow hover:animate-heartbeat transition-all duration-500 cursor-pointer">
-              <svg
-                width="40"
-                height="40"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="text-white animate-wiggle hover:animate-none"
-              >
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-              </svg>
-            </div>
-          </div>
-          <h1
-            className="text-7xl font-bold bg-gradient-to-r from-white via-gray-100 to-spotify-green bg-clip-text text-transparent mb-6 leading-tight animate-slide-up hover:animate-shimmer transition-all duration-300"
-            style={{ backgroundSize: "200% 200%" }}
-          >
-            ArtistBlender
-          </h1>
-          <div className="h-1 w-24 bg-gradient-to-r from-spotify-green to-spotify-green-light mx-auto mb-6 animate-slide-up-delay rounded-full"></div>
-          <p className="text-xl text-gray-300 font-light max-w-2xl mx-auto leading-relaxed animate-fade-in-delay">
-            Discover the perfect harmony of your favorite artists in one
-            seamless playlist
-          </p>
+  // Enhanced Colorful Splash Screen
+  if (showSplash) {
+    return (
+      <div
+        className={`fixed inset-0 bg-gradient-to-br from-black via-spotify-neon-purple/20 via-spotify-electric-blue/10 to-black flex items-center justify-center z-50 overflow-hidden ${
+          splashExiting ? "animate-splash-slide-down" : ""
+        }`}
+      >
+        {/* Animated Background Particles */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-spotify-green/30 rounded-full blur-2xl animate-particle-float"></div>
+          <div
+            className="absolute top-1/3 right-1/4 w-24 h-24 bg-spotify-electric-blue/40 rounded-full blur-xl animate-particle-float"
+            style={{ animationDelay: "1s" }}
+          ></div>
+          <div
+            className="absolute bottom-1/3 left-1/3 w-28 h-28 bg-spotify-hot-pink/35 rounded-full blur-xl animate-particle-float"
+            style={{ animationDelay: "2s" }}
+          ></div>
+          <div
+            className="absolute bottom-1/4 right-1/3 w-20 h-20 bg-spotify-lime-green/45 rounded-full blur-lg animate-particle-float"
+            style={{ animationDelay: "0.5s" }}
+          ></div>
+          <div
+            className="absolute top-1/2 left-1/6 w-16 h-16 bg-spotify-sunset-orange/50 rounded-full blur-lg animate-particle-float"
+            style={{ animationDelay: "1.5s" }}
+          ></div>
         </div>
 
-        <SearchContainer
-          selectedArtists={selectedArtists}
-          onArtistsChange={setSelectedArtists}
-          onShuffle={handleShuffle}
-          isLoading={isLoading}
-          showControls={showControls}
-        />
+        <div className="text-center relative z-10">
+          {/* Enhanced Background Glow */}
+          <div className="absolute inset-0 bg-gradient-to-r from-spotify-green/20 via-spotify-electric-blue/15 to-spotify-hot-pink/20 rounded-full blur-3xl animate-colorful-glow"></div>
 
-        {currentTrack && showControls && (
-          <>
-            <AlbumCover
-              albumImageUrl={currentTrack.album_image_url}
-              trackName={currentTrack.track_name}
-              artistName={currentTrack.artist_name}
-            />
-            <PlaybackControls
-              isPlaying={currentTrack.is_playing}
-              onPlaybackAction={handlePlaybackAction}
-            />
-          </>
-        )}
+          <div className="relative z-10">
+            {/* Animated Logo */}
+            <div className="mb-12 animate-spotify-bounce">
+              <div className="relative">
+                <div className="absolute inset-0 animate-rainbow-pulse rounded-full blur-2xl opacity-60"></div>
+                <svg
+                  className="w-40 h-40 mx-auto text-spotify-green relative z-10 drop-shadow-2xl animate-logo-spin"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.84-.179-.84-.66 0-.359.24-.66.54-.78 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.242 1.021zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
+                </svg>
+              </div>
+            </div>
 
+            {/* Enhanced Title and Content */}
+            {isAppLoaded && (
+              <div className="animate-title-entrance">
+                <h1 className="text-6xl md:text-7xl font-black text-white mb-4 tracking-tight text-center drop-shadow-2xl">
+                  ArtistBlender
+                </h1>
+                <p className="text-xl text-white/90 font-semibold text-center mb-2 drop-shadow-lg">
+                  Mix • Discover • Vibe
+                </p>
+                <p className="text-lg text-spotify-text-subdued font-medium text-center mb-6">
+                  Powered by{" "}
+                  <span className="text-spotify-green font-bold drop-shadow-sm">
+                    Spotify
+                  </span>
+                </p>
+
+                {/* Enhanced Loading Animation */}
+                <div className="flex justify-center space-x-2">
+                  <div className="w-3 h-3 bg-spotify-green rounded-full animate-loading-bounce"></div>
+                  <div
+                    className="w-3 h-3 bg-spotify-electric-blue rounded-full animate-loading-bounce"
+                    style={{ animationDelay: "0.2s" }}
+                  ></div>
+                  <div
+                    className="w-3 h-3 bg-spotify-hot-pink rounded-full animate-loading-bounce"
+                    style={{ animationDelay: "0.4s" }}
+                  ></div>
+                  <div
+                    className="w-3 h-3 bg-spotify-lime-green rounded-full animate-loading-bounce"
+                    style={{ animationDelay: "0.6s" }}
+                  ></div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-spotify-black text-white font-inter overflow-hidden animate-fade-in">
+      {/* Header */}
+      <div className="animate-slide-in-left animation-delay-100">
+        <Header userProfile={userProfile} />
+      </div>
+
+      {/* Main Content */}
+      <main className="relative bg-gradient-to-b from-spotify-dark-gray to-spotify-black min-h-screen">
+        {/* Subtle Natural Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-spotify-green/8 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-spotify-green/5 rounded-full blur-3xl animate-float-delayed"></div>
+
+          {/* More natural accent elements */}
+          <div className="absolute top-1/2 left-0 w-64 h-64 bg-spotify-green/6 rounded-full blur-2xl animate-particle-float"></div>
+          <div
+            className="absolute top-1/3 right-0 w-72 h-72 bg-spotify-green/4 rounded-full blur-3xl animate-particle-float"
+            style={{ animationDelay: "1s" }}
+          ></div>
+        </div>
+
+        <div className="relative container mx-auto px-6 pt-16 pb-32">
+          {/* Hero Section */}
+          <div className="text-center mb-16 animate-fade-in-up animation-delay-300">
+            <div className="relative mb-8">
+              {/* Natural subtle glow behind title */}
+              <div className="absolute inset-0 bg-spotify-green/10 rounded-full blur-3xl animate-soft-glow"></div>
+              <h1 className="relative text-6xl md:text-7xl font-black text-white mb-4 tracking-tight drop-shadow-2xl">
+                <span className="text-white drop-shadow-xl">Your music,</span>
+                <br />
+                <span className="text-spotify-green drop-shadow-xl">
+                  your way
+                </span>
+              </h1>
+            </div>
+            <p className="text-lg text-spotify-text-subdued max-w-2xl mx-auto font-light mb-4">
+              Mix and discover music from your favorite artists. Create the
+              perfect blend.
+            </p>
+
+            {/* Simple decorative line */}
+            <div className="flex justify-center mb-8">
+              <div className="w-16 h-1 bg-spotify-green rounded-full animate-soft-glow"></div>
+            </div>
+          </div>
+
+          {/* Search Section */}
+          <div className="animate-fade-in-up animation-delay-500">
+            <SearchContainer
+              selectedArtists={selectedArtists}
+              onArtistsChange={setSelectedArtists}
+              onShuffle={handleShuffle}
+              isLoading={isLoading}
+              showControls={showControls}
+            />
+          </div>
+
+          {/* Now Playing Section */}
+          {currentTrack && showControls && (
+            <div className="mt-12 animate-fade-in-up animation-delay-400">
+              <div className="text-center mb-6">
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Now Playing
+                </h2>
+                <div className="w-16 h-1 bg-spotify-green mx-auto rounded-full"></div>
+              </div>
+
+              <div className="max-w-md mx-auto">
+                <AlbumCover
+                  albumImageUrl={currentTrack.album_image_url}
+                  trackName={currentTrack.track_name}
+                  artistName={currentTrack.artist_name}
+                />
+                <PlaybackControls
+                  isPlaying={currentTrack.is_playing}
+                  onPlaybackAction={handlePlaybackAction}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* Footer */}
+      <div className="animate-slide-in-right animation-delay-600">
         <Footer currentTrack={currentTrack} showControls={showControls} />
       </div>
 
+      {/* Modals */}
       {error && <ErrorPopup message={error} onClose={() => setError(null)} />}
-
       {isLoading && <LoadingMessage />}
     </div>
   );
