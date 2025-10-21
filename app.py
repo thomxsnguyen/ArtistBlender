@@ -17,6 +17,39 @@ sp_oauth = SpotifyOAuth(
     scope='user-library-read user-read-playback-state user-modify-playback-state user-top-read user-read-currently-playing user-follow-read'
 )
 
+
+@app.route('/')
+def login():
+    '''Creates and authorization url inorder to receive an authorization code'''
+
+    session.clear() # Clears the session, ensures that old access tokens or any user information are removed.
+    auth_url = sp_oauth.get_authorize_url()
+    return redirect(auth_url) 
+
+@app.route('/callback')
+def callback():
+    ''' Exchanges the authorization code for the access token which allows access to user's data'''
+
+    code = request.args.get('code')  # Checks to see if authorization code is valid
+    if not code:
+        return "Authorization code not found", 400
+
+    token_info = sp_oauth.get_access_token(code, as_dict=False) # Gives authorization code in exchange for access token
+    session['token_info'] = token_info # Stores the access token information under the session
+
+    sp = commands.get_spotify_client(sp_oauth)  # Retrieves the spotify client (Supported by the spotipy library)
+    if not sp:
+        return "Spotify authentication failed", 401
+
+    user_info = sp.current_user() # Uses the spotify client to obtain the user's username and user's profile picture
+    session['user_profile'] = {  
+        'display_name': user_info['display_name'],
+        'profile_image': user_info['images'][0]['url'] if user_info['images'] else None
+    }
+
+    return redirect('/select_artists')
+
+
 def get_token():
     '''Retrieve a valid access token, refresh if necessary.'''
     token_info = session.get('token_info', {})
@@ -51,34 +84,6 @@ def get_tracks_from_albums(sp, albums):
         all_tracks.extend(tracks)
     return all_tracks
 
-@app.route('/')
-def login():
-    '''Gives the user an authorization URL to receive an authorization code'''
-    session.clear()
-    auth_url = sp_oauth.get_authorize_url()
-    return redirect(auth_url)
-
-@app.route('/callback')
-def callback():
-    ''' Gives program authorization code, program finds user's profile picture and username '''
-    code = request.args.get('code')
-    if not code:
-        return "Authorization code not found", 400
-
-    token_info = sp_oauth.get_access_token(code, as_dict=False)
-    session['token_info'] = token_info
-
-    sp = commands.get_spotify_client(sp_oauth)
-    if not sp:
-        return "Spotify authentication failed", 401
-
-    user_info = sp.current_user()
-    session['user_profile'] = {
-        'display_name': user_info['display_name'],
-        'profile_image': user_info['images'][0]['url'] if user_info['images'] else None
-    }
-
-    return redirect('/select_artists')
 
 @app.route('/select_artists')
 def select_artists():
