@@ -3,7 +3,11 @@
 @import "tailwindcss";
 
 body {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   margin: 0;
   padding: 0;
   background: #000000;
@@ -11,23 +15,14 @@ body {
   min-height: 100vh;
 }
 
-/* Custom scrollbar */
+/* Hide scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  display: none;
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #1db954, #1ed760);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #1ed760, #1db954);
+/* Firefox */
+* {
+  scrollbar-width: none;
 }
 
 /* Additional custom styles */
@@ -50,10 +45,13 @@ html {
 }
 
 /* Focus styles */
-button:focus,
-input:focus {
+button:focus {
   outline: 2px solid #1db954;
   outline-offset: 2px;
+}
+
+input:focus {
+  outline: none;
 }
 
 /* Improved backdrop filter support */
@@ -82,7 +80,8 @@ input:focus {
     text-shadow: 0 0 20px rgba(29, 185, 84, 0.5);
   }
   to {
-    text-shadow: 0 0 30px rgba(29, 185, 84, 0.8),
+    text-shadow:
+      0 0 30px rgba(29, 185, 84, 0.8),
       0 0 40px rgba(29, 185, 84, 0.6);
   }
 }
@@ -247,7 +246,9 @@ input:focus {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.3);
   transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
+  transition:
+    width 0.6s,
+    height 0.6s;
 }
 
 .ripple:active::after {
@@ -262,12 +263,17 @@ input:focus {
 
 @keyframes neonGlow {
   from {
-    box-shadow: 0 0 5px rgba(29, 185, 84, 0.5), 0 0 10px rgba(29, 185, 84, 0.5),
+    box-shadow:
+      0 0 5px rgba(29, 185, 84, 0.5),
+      0 0 10px rgba(29, 185, 84, 0.5),
       0 0 15px rgba(29, 185, 84, 0.5);
   }
   to {
-    box-shadow: 0 0 10px rgba(29, 185, 84, 0.8), 0 0 20px rgba(29, 185, 84, 0.8),
-      0 0 30px rgba(29, 185, 84, 0.8), 0 0 40px rgba(29, 185, 84, 0.8);
+    box-shadow:
+      0 0 10px rgba(29, 185, 84, 0.8),
+      0 0 20px rgba(29, 185, 84, 0.8),
+      0 0 30px rgba(29, 185, 84, 0.8),
+      0 0 40px rgba(29, 185, 84, 0.8);
   }
 }
 

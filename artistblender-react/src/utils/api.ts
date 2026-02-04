@@ -18,7 +18,7 @@ export const spotifyApi = {
   // Search for artists
   searchArtists: async (query: string): Promise<SearchArtistsResponse> => {
     const response = await api.get(
-      `/search_artists?query=${encodeURIComponent(query)}`
+      `/search_artists?query=${encodeURIComponent(query)}`,
     );
     return response.data;
   },
@@ -59,6 +59,17 @@ export const spotifyApi = {
   getTopArtists: async (): Promise<Artist[]> => {
     const response = await api.get("/top_artists");
     return response.data;
+  },
+
+  // Get user profile
+  getUserProfile: async (): Promise<UserProfile> => {
+    const response = await api.get("/profile");
+    return response.data;
+  },
+
+  // Logout
+  logout: async (): Promise<void> => {
+    await api.post("/logout");
   },
 
   // Login (redirect to Spotify OAuth)

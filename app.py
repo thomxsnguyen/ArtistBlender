@@ -111,6 +111,33 @@ def top_artists():
     top_artists = [{'name': artist['name'], 'image': artist['images'][0]['url']} for artist in results['items']]
     
     return jsonify(top_artists)
+
+@app.route('/profile', methods=['GET'])
+def get_profile():
+    ''' Get user profile information '''
+    token = get_token()
+    if not token:
+        return {'error': 'Spotify authentication required'}, 401
+    
+    user_profile = session.get('user_profile')
+    if user_profile:
+        return jsonify(user_profile)
+    
+    # If not in session, fetch from Spotify
+    sp = spotipy.Spotify(auth=token)
+    user_info = sp.current_user()
+    profile = {
+        'display_name': user_info['display_name'],
+        'profile_image': user_info['images'][0]['url'] if user_info['images'] else None
+    }
+    session['user_profile'] = profile
+    return jsonify(profile)
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    ''' Clear session and logout user '''
+    session.clear()
+    return jsonify({'success': True})
 @app.route('/select_artists')
 def select_artists():
     ''' Redirect to React app after authentication '''

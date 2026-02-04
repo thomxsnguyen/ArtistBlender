@@ -6,7 +6,7 @@ import { ErrorPopup } from "./components/ErrorPopup";
 import { LoadingMessage } from "./components/LoadingMessage";
 import { Login } from "./components/Login";
 import { spotifyApi } from "./utils/api";
-import type { Artist, Track } from "./types";
+import type { Artist, Track, UserProfile } from "./types";
 
 function App() {
   const [selectedArtists, setSelectedArtists] = useState<Artist[]>([]);
@@ -16,6 +16,7 @@ function App() {
   const [showControls, setShowControls] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     // Check if user is authenticated by trying to get top artists
@@ -23,18 +24,18 @@ function App() {
       try {
         const controller = new AbortController();
         const timeoutId = window.setTimeout(() => controller.abort(), 3000);
-        const response = await fetch("http://127.0.0.1:8000/top_artists", {
-          credentials: "include",
-          signal: controller.signal,
-        });
+        const topArtists = await spotifyApi.getTopArtists();
         window.clearTimeout(timeoutId);
-        if (response.ok) {
-          setIsAuthenticated(true);
-          setIsCheckingAuth(false);
-        } else {
-          setIsAuthenticated(false);
-          setIsCheckingAuth(false);
+
+        setIsAuthenticated(true);
+        // Fetch user profile
+        try {
+          const profile = await spotifyApi.getUserProfile();
+          setUserProfile(profile);
+        } catch (profileError) {
+          console.error("Profile fetch failed:", profileError);
         }
+        setIsCheckingAuth(false);
       } catch (error) {
         console.error("Auth check failed:", error);
         setIsAuthenticated(false);
@@ -133,6 +134,19 @@ function App() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await spotifyApi.logout();
+      setIsAuthenticated(false);
+      setUserProfile(null);
+      setSelectedArtists([]);
+      setCurrentTrack(null);
+      setShowControls(false);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   // Show login page if not authenticated
   if (!isAuthenticated && !isCheckingAuth) {
     return <Login />;
@@ -151,32 +165,84 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-spotify-black text-white">
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-spotify-dark-gray/70 via-spotify-black to-spotify-black"></div>
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(29,185,84,0.12),_transparent_60%)]"></div>
+    <div className="min-h-screen bg-spotify-black text-white relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-spotify-dark-gray/70 via-spotify-black to-spotify-black animate-pulse-slow"></div>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(29,185,84,0.12),_transparent_60%)] animate-float-delayed"></div>
 
-      <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
+      {/* Floating orbs for ambient animation */}
+      <div className="pointer-events-none absolute top-20 right-20 w-96 h-96 bg-spotify-green/5 rounded-full blur-3xl animate-float opacity-40"></div>
+      <div className="pointer-events-none absolute bottom-20 left-20 w-64 h-64 bg-spotify-green/3 rounded-full blur-2xl animate-float-delayed opacity-30"></div>
+
+      <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6 animate-fade-in">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-2xl bg-spotify-green/15 text-spotify-green flex items-center justify-center">
-            <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+          <div className="h-10 w-10 rounded-2xl bg-spotify-green/15 text-spotify-green flex items-center justify-center animate-gentle-bounce group">
+            <svg
+              className="h-6 w-6 group-hover:scale-110 transition-transform duration-300"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
               <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.84-.179-.84-.66 0-.359.24-.66.54-.78 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.242 1.021zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
             </svg>
           </div>
-          <div>
-            <p className="text-xs uppercase tracking-[0.25em] text-spotify-text-subdued">
+          <div className="animate-slide-in-left">
+            <p className="text-xs uppercase tracking-[0.25em] text-spotify-text-subdued animate-pulse">
               ArtistBlender
             </p>
-            <h1 className="text-xl font-semibold">
+            <h1 className="text-xl font-semibold hover:text-spotify-green transition-colors duration-300">
               Blend your favorite artists
             </h1>
           </div>
         </div>
-        <div className="rounded-full border border-spotify-border-gray bg-spotify-dark-gray px-4 py-2 text-sm text-spotify-text-subdued">
-          Connected to Spotify
+        <div className="flex items-center gap-3 animate-slide-in-right">
+          {userProfile && (
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-spotify-dark-gray/50 rounded-full border border-spotify-border-gray">
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-spotify-medium-gray flex items-center justify-center">
+                  {userProfile.profile_image ? (
+                    <img
+                      src={userProfile.profile_image}
+                      alt={userProfile.display_name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <svg
+                      className="w-5 h-5 text-spotify-text-subdued"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                    </svg>
+                  )}
+                </div>
+                <span className="text-sm font-medium text-white truncate max-w-24">
+                  {userProfile.display_name}
+                </span>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="p-2 rounded-full bg-spotify-dark-gray/50 border border-spotify-border-gray hover:bg-spotify-medium-gray hover:border-red-500/50 text-spotify-text-subdued hover:text-red-400 transition-all duration-300 group"
+                title="Logout"
+              >
+                <svg
+                  className="w-5 h-5 group-hover:scale-110 transition-transform duration-200"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-16">
+      <main className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-16 animate-fade-in-up">
         <div className="mb-10 flex flex-col gap-4">
           <h2 className="text-4xl font-semibold tracking-tight text-white">
             A simple, dynamic way to shuffle music
@@ -188,7 +254,7 @@ function App() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-          <section className="rounded-3xl border border-spotify-border-gray bg-spotify-dark-gray p-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
+          <section className="rounded-3xl bg-spotify-dark-gray/80 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
             <SearchContainer
               selectedArtists={selectedArtists}
               onArtistsChange={setSelectedArtists}
@@ -198,7 +264,7 @@ function App() {
             />
           </section>
 
-          <aside className="rounded-3xl border border-spotify-border-gray bg-spotify-dark-gray p-6">
+          <aside className="rounded-3xl bg-spotify-dark-gray/80 p-6 shadow-[0_14px_40px_rgba(0,0,0,0.35)]">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Now playing</h3>
               <span className="text-xs text-spotify-text-subdued">Live</span>
@@ -219,7 +285,7 @@ function App() {
                 </div>
               </div>
             ) : (
-              <div className="mt-6 rounded-2xl border border-dashed border-spotify-border-gray bg-spotify-black/60 p-6 text-sm text-spotify-text-subdued">
+              <div className="mt-6 rounded-2xl bg-spotify-black/60 p-6 text-sm text-spotify-text-subdued">
                 Start a blend to see playback controls here.
               </div>
             )}

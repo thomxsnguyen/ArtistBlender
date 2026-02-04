@@ -66,6 +66,19 @@ export default {
         "logo-spin": "logoSpin 3s ease-in-out infinite",
         "particle-float": "particleFloat 4s ease-in-out infinite",
         "loading-bounce": "loadingBounce 1.4s ease-in-out infinite",
+        "overlay-fade-in": "overlayFadeIn 0.6s ease-out",
+        "modal-slide-up": "modalSlideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "text-shimmer": "textShimmer 2s ease-in-out infinite",
+        "title-glow": "titleGlow 3s ease-in-out infinite",
+        "fade-in-delayed": "fadeInDelayed 1s ease-out 0.4s both",
+        "spin-slow": "spin 3s linear infinite",
+        "wave-1": "wave 1.2s ease-in-out infinite 0s",
+        "wave-2": "wave 1.2s ease-in-out infinite 0.1s",
+        "wave-3": "wave 1.2s ease-in-out infinite 0.2s",
+        "wave-4": "wave 1.2s ease-in-out infinite 0.3s",
+        "wave-5": "wave 1.2s ease-in-out infinite 0.4s",
+        "wave-6": "wave 1.2s ease-in-out infinite 0.5s",
+        "wave-7": "wave 1.2s ease-in-out infinite 0.6s",
       },
       keyframes: {
         fadeIn: {
@@ -246,6 +259,41 @@ export default {
             transform: "scale(1.2)",
             opacity: "1",
           },
+        },
+        overlayFadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        modalSlideUp: {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(40px) scale(0.9)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0) scale(1)",
+          },
+        },
+        textShimmer: {
+          "0%, 100%": { opacity: "0.6" },
+          "50%": { opacity: "1" },
+        },
+        titleGlow: {
+          "0%, 100%": {
+            textShadow: "0 0 20px rgba(255,255,255,0.3)",
+          },
+          "50%": {
+            textShadow:
+              "0 0 30px rgba(255,255,255,0.6), 0 0 40px rgba(29,185,84,0.3)",
+          },
+        },
+        fadeInDelayed: {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        wave: {
+          "0%, 100%": { transform: "scaleY(1)" },
+          "50%": { transform: "scaleY(0.3)" },
         },
       },
     },

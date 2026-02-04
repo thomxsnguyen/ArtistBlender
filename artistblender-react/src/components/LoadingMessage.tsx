@@ -2,35 +2,67 @@ import React from "react";
 
 export const LoadingMessage: React.FC = () => {
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/65 backdrop-blur-sm">
-      <div className="relative w-full max-w-sm rounded-3xl border border-spotify-border-gray bg-spotify-dark-gray px-8 py-10 shadow-[0_30px_80px_rgba(0,0,0,0.55)]">
-        <div className="absolute -top-10 left-1/2 flex h-16 w-16 -translate-x-1/2 items-center justify-center rounded-2xl bg-spotify-green text-black shadow-[0_12px_28px_rgba(29,185,84,0.5)]">
-          <svg className="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-          </svg>
-        </div>
+    <div className="fixed inset-0 z-40 flex items-center justify-center animate-overlay-fade-in">
+      {/* Modern gradient backdrop */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/90 to-black/95 backdrop-blur-xl"></div>
 
-        <div className="pt-6 text-center">
-          <p className="text-xs uppercase tracking-[0.3em] text-spotify-text-subdued">
-            Mixing now
-          </p>
-          <h2 className="mt-3 text-2xl font-semibold text-white">
-            Crafting your blend
-          </h2>
-          <p className="mt-2 text-sm text-spotify-text-subdued">
-            Curating tracks that match your selected artists.
-          </p>
+      {/* Floating orbs for ambient effect */}
+      <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-spotify-green/20 rounded-full blur-3xl animate-pulse-slow"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-24 h-24 bg-spotify-green/10 rounded-full blur-2xl animate-float-delayed"></div>
 
-          <div className="mt-6 flex items-center justify-center gap-2">
-            <span className="h-2 w-2 animate-loading-bounce rounded-full bg-spotify-green"></span>
-            <span
-              className="h-2 w-2 animate-loading-bounce rounded-full bg-spotify-green"
-              style={{ animationDelay: "0.2s" }}
-            ></span>
-            <span
-              className="h-2 w-2 animate-loading-bounce rounded-full bg-spotify-green"
-              style={{ animationDelay: "0.4s" }}
-            ></span>
+      {/* Main modal */}
+      <div className="relative animate-modal-slide-up">
+        {/* Glass morphism container */}
+        <div className="relative w-full max-w-md mx-4 rounded-[2.5rem] bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_40px_120px_rgba(0,0,0,0.7)] overflow-hidden">
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/10 pointer-events-none"></div>
+
+          {/* Animated top icon */}
+          <div className="absolute -top-8 left-1/2 -translate-x-1/2">
+            <div className="relative">
+              <div className="w-16 h-16 bg-gradient-to-br from-spotify-green to-spotify-green-light rounded-2xl flex items-center justify-center shadow-[0_20px_40px_rgba(29,185,84,0.4)] animate-gentle-bounce">
+                <svg
+                  className="w-8 h-8 text-black animate-spin-slow"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                </svg>
+              </div>
+              <div className="absolute inset-0 w-16 h-16 bg-spotify-green rounded-2xl animate-ping opacity-20"></div>
+            </div>
+          </div>
+
+          <div className="px-8 py-12 pt-16 text-center">
+            {/* Status text */}
+            <div className="animate-text-shimmer">
+              <p className="text-xs font-medium uppercase tracking-[0.4em] text-spotify-green mb-4 animate-pulse">
+                M I X I N G &nbsp; N O W
+              </p>
+            </div>
+
+            {/* Main title */}
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-white to-gray-300 bg-clip-text text-transparent mb-4 animate-title-glow">
+              Crafting your blend
+            </h2>
+
+            {/* Description */}
+            <p className="text-gray-300 text-base leading-relaxed animate-fade-in-delayed">
+              Curating tracks that match your selected artists.
+            </p>
+
+            {/* Modern loading animation */}
+            <div className="mt-8 flex items-center justify-center">
+              <div className="flex gap-1">
+                <div className="w-1 h-8 bg-gradient-to-t from-spotify-green/60 to-spotify-green rounded-full animate-wave-1"></div>
+                <div className="w-1 h-6 bg-gradient-to-t from-spotify-green/60 to-spotify-green rounded-full animate-wave-2"></div>
+                <div className="w-1 h-10 bg-gradient-to-t from-spotify-green/60 to-spotify-green rounded-full animate-wave-3"></div>
+                <div className="w-1 h-4 bg-gradient-to-t from-spotify-green/60 to-spotify-green rounded-full animate-wave-4"></div>
+                <div className="w-1 h-7 bg-gradient-to-t from-spotify-green/60 to-spotify-green rounded-full animate-wave-5"></div>
+                <div className="w-1 h-5 bg-gradient-to-t from-spotify-green/60 to-spotify-green rounded-full animate-wave-6"></div>
+                <div className="w-1 h-9 bg-gradient-to-t from-spotify-green/60 to-spotify-green rounded-full animate-wave-7"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

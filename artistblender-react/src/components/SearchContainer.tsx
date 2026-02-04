@@ -112,12 +112,12 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search for artists..."
-            className="w-full pl-12 pr-12 py-3.5 bg-spotify-black text-white placeholder-spotify-text-subdued rounded-full border border-spotify-border-gray focus:outline-none focus:border-spotify-green/80 focus:ring-4 focus:ring-spotify-green/15 selection:bg-spotify-green selection:text-black transition-all duration-200 text-base"
+            className="w-full pl-12 pr-12 py-3.5 bg-spotify-black text-white placeholder-spotify-text-subdued rounded-full border border-spotify-border-gray focus:outline-none focus:border-spotify-green/50 focus:ring-0 selection:bg-spotify-green/20 selection:text-white transition-all duration-200 text-base"
           />
           {searchQuery && (
             <button
               onClick={clearSearch}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-spotify-text-subdued hover:text-white transition-colors"
+              className="absolute inset-y-0 right-0 pr-4 flex items-center text-white hover:text-spotify-green transition-all duration-200 hover:scale-110 active:scale-95"
             >
               <svg
                 className="h-5 w-5"
@@ -143,12 +143,12 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
 
         {/* Search Results Dropdown */}
         {showDropdown && searchResults.length > 0 && (
-          <div className="mt-3 bg-spotify-dark-gray border border-spotify-border-gray rounded-2xl shadow-2xl max-h-80 overflow-y-auto animate-fade-in">
+          <div className="mt-3 bg-spotify-dark-gray/95 backdrop-blur-xl border border-spotify-border-gray rounded-2xl shadow-[0_25px_50px_rgba(0,0,0,0.6)] max-h-80 overflow-y-auto animate-modal-slide-up">
             {searchResults.map((artist, index) => (
               <button
                 key={artist.id}
                 onClick={() => handleArtistSelect(artist)}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-spotify-medium-gray/70 transition-colors text-left"
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-spotify-medium-gray/70 transition-all duration-300 text-left group hover:scale-[1.02] transform-gpu"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <div className="w-12 h-12 rounded-full bg-spotify-medium-gray flex items-center justify-center overflow-hidden">
@@ -185,17 +185,18 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
       {/* Selected Artists */}
       {selectedArtists.length > 0 && (
         <div className="mb-8 animate-fade-in-up">
-          <h3 className="text-lg font-semibold text-white mb-4">
-            Selected Artists
+          <h3 className="text-lg font-semibold text-white mb-4 animate-title-glow">
+            Selected Artists ({selectedArtists.length})
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {selectedArtists.map((artist, index) => (
               <div
                 key={artist.id}
-                className="group relative bg-spotify-dark-gray hover:bg-spotify-medium-gray rounded-lg p-4 transition-all duration-300 hover:shadow-lg animate-scale-in"
+                className="group relative bg-spotify-dark-gray hover:bg-spotify-medium-gray rounded-lg p-4 transition-all duration-300 hover:shadow-lg hover:scale-105 animate-scale-in transform-gpu"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="aspect-square rounded-lg bg-spotify-medium-gray mb-3 overflow-hidden">
+                <div className="pointer-events-none absolute inset-0 rounded-lg bg-spotify-green/10" />
+                <div className="relative z-10 aspect-square rounded-lg bg-spotify-medium-gray mb-3 overflow-hidden">
                   {artist.image ? (
                     <img
                       src={artist.image}
@@ -219,28 +220,27 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
                         e.stopPropagation();
                         handleRemoveArtist(artist.id);
                       }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-red-500 hover:bg-red-600 text-white rounded-full p-2"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-red-400 hover:text-red-300"
                     >
                       <svg
-                        className="w-4 h-4"
-                        fill="none"
+                        className="w-5 h-5"
+                        fill="currentColor"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                       >
                         <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
                           d="M6 18L18 6M6 6l12 12"
                         />
                       </svg>
                     </button>
                   </div>
                 </div>
-                <p className="text-white font-medium text-sm truncate">
+                <p className="relative z-10 text-white font-medium text-sm truncate">
                   {artist.name}
                 </p>
-                <p className="text-spotify-text-subdued text-xs">Artist</p>
+                <p className="relative z-10 text-spotify-text-subdued text-xs">
+                  Artist
+                </p>
               </div>
             ))}
           </div>
@@ -262,7 +262,11 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
               </>
             ) : (
               <>
-                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                <svg
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
                   <path d="M8 5v14l11-7z" />
                 </svg>
                 <span>Shuffle & Play</span>
