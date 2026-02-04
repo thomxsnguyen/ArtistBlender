@@ -89,6 +89,19 @@ def get_tracks_from_albums(sp, albums):
     return all_tracks
 
 
+@app.route('/top_artists', methods=['GET'])
+def top_artists():
+    ''' Check if user is authenticated and retrieve top artists '''
+    token = get_token()
+    if not token:
+        return {'error': 'Spotify authentication required'}, 401
+
+    sp = spotipy.Spotify(auth=token)
+    
+    results = sp.current_user_top_artists(limit=4, time_range='short_term')
+    top_artists = [{'name': artist['name'], 'image': artist['images'][0]['url']} for artist in results['items']]
+    
+    return jsonify(top_artists)
 @app.route('/select_artists')
 def select_artists():
     ''' Retrieves user selected artists '''

@@ -6,6 +6,7 @@ import { PlaybackControls } from "./components/PlaybackControls";
 import { Footer } from "./components/Footer";
 import { ErrorPopup } from "./components/ErrorPopup";
 import { LoadingMessage } from "./components/LoadingMessage";
+import { Login } from "./components/Login";
 import { spotifyApi } from "./utils/api";
 import type { Artist, Track, UserProfile } from "./types";
 
@@ -19,8 +20,38 @@ function App() {
   const [isAppLoaded, setIsAppLoaded] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [splashExiting, setSplashExiting] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   useEffect(() => {
+    // Check if user is authenticated by trying to get top artists
+    const checkAuthentication = async () => {
+      try {
+        const response = await fetch("/api/top_artists");
+        if (response.ok) {
+          setIsAuthenticated(true);
+          setIsCheckingAuth(false);
+        } else {
+          setIsAuthenticated(false);
+          setIsCheckingAuth(false);
+        }
+      } catch (error) {
+        console.error("Auth check failed:", error);
+        setIsAuthenticated(false);
+        setIsCheckingAuth(false);
+      }
+    };
+
+    checkAuthentication();
+  }, []);
+
+  useEffect(() => {
+    // Skip splash screen if not authenticated
+    if (!isAuthenticated && !isCheckingAuth) {
+      setShowSplash(false);
+      return;
+    }
+
     // App loading sequence - Enhanced with slide-down animation
     const loadSequence = async () => {
       // Show splash for 2.5 seconds
@@ -50,8 +81,10 @@ function App() {
       }
     };
 
-    loadSequence();
-  }, []);
+    if (isAuthenticated && !isCheckingAuth) {
+      loadSequence();
+    }
+  }, [isAuthenticated, isCheckingAuth]);
 
   const handleShuffle = async () => {
     if (selectedArtists.length === 0) {
@@ -121,6 +154,23 @@ function App() {
       console.error(`Error with ${action} action:`, error);
     }
   };
+
+  // Show login page if not authenticated
+  if (!isAuthenticated && !isCheckingAuth) {
+    return <Login />;
+  }
+
+  // Show loading while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-spotify-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-spotify-dark-gray border-t-spotify-green rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-spotify-text-subdued">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Enhanced Colorful Splash Screen
   if (showSplash) {
