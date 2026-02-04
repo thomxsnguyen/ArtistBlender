@@ -27,7 +27,7 @@ function App() {
     // Check if user is authenticated by trying to get top artists
     const checkAuthentication = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5000/top_artists", {
+        const response = await fetch("http://127.0.0.1:8000/top_artists", {
           credentials: "include",
         });
         if (response.ok) {

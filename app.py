@@ -277,4 +277,4 @@ def play_track():
         return {'error': 'Failed to resume playback'}, 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8000)

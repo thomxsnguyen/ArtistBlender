@@ -3,7 +3,7 @@ import React from "react";
 export const Login: React.FC = () => {
   const handleSpotifyLogin = () => {
     // Redirect to Flask backend login endpoint
-    window.location.href = "http://127.0.0.1:5000/";
+    window.location.href = "http://127.0.0.1:8000/";
   };
 
   return (
