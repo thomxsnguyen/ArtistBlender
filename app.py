@@ -3,12 +3,16 @@ import config
 import random
 from spotipy.oauth2 import SpotifyOAuth
 from flask import Flask, redirect, request, session, render_template, jsonify
+from flask_cors import CORS
 import commands as commands  
 import concurrent.futures
 
 app = Flask(__name__)
 app.secret_key = config.CLIENT_SECRET
 app.config['SESSION_COOKIE_NAME'] = 'spotify-login-session'
+
+# Enable CORS for the React frontend
+CORS(app, origins=['http://localhost:5173', 'http://localhost:3000'], supports_credentials=True)
 
 sp_oauth = SpotifyOAuth(
     client_id=config.CLIENT_ID,
@@ -108,7 +112,7 @@ def search_artists():
     results = sp.search(q=query, type='artist', limit=20)
     artists = results['artists']['items']
 
-    return {'artists': [{'id': artist['id'], 'name': artist['name']} for artist in artists]}
+    return jsonify({'artists': [{'id': artist['id'], 'name': artist['name'], 'image': artist['images'][0]['url'] if artist['images'] else None} for artist in artists]})
 
 @app.route('/shuffle', methods=['POST'])
 def shuffle():
