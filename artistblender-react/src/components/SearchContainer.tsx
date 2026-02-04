@@ -112,7 +112,7 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search for artists..."
-            className="w-full pl-12 pr-12 py-4 bg-spotify-dark-gray text-white placeholder-spotify-text-subdued rounded-full border border-spotify-border-gray focus:outline-none focus:border-spotify-border-gray selection:bg-spotify-green selection:text-black transition-all duration-200 text-lg"
+            className="w-full pl-12 pr-12 py-3.5 bg-spotify-black text-white placeholder-spotify-text-subdued rounded-full border border-spotify-border-gray focus:outline-none focus:border-spotify-green/80 focus:ring-4 focus:ring-spotify-green/15 selection:bg-spotify-green selection:text-black transition-all duration-200 text-base"
           />
           {searchQuery && (
             <button
@@ -143,12 +143,12 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
 
         {/* Search Results Dropdown */}
         {showDropdown && searchResults.length > 0 && (
-          <div className="absolute top-full left-0 right-0 mt-2 bg-spotify-dark-gray border border-spotify-border-gray rounded-lg shadow-2xl max-h-80 overflow-y-auto z-50 animate-fade-in">
+          <div className="mt-3 bg-spotify-dark-gray border border-spotify-border-gray rounded-2xl shadow-2xl max-h-80 overflow-y-auto animate-fade-in">
             {searchResults.map((artist, index) => (
               <button
                 key={artist.id}
                 onClick={() => handleArtistSelect(artist)}
-                className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-spotify-medium-gray transition-colors text-left"
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-spotify-medium-gray/70 transition-colors text-left"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <div className="w-12 h-12 rounded-full bg-spotify-medium-gray flex items-center justify-center overflow-hidden">
@@ -172,7 +172,9 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
                   <p className="text-white font-medium truncate">
                     {artist.name}
                   </p>
-                  <p className="text-spotify-text-subdued text-sm">Artist</p>
+                  <p className="text-spotify-text-subdued text-xs tracking-wide">
+                    Artist
+                  </p>
                 </div>
               </button>
             ))}
@@ -251,24 +253,20 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
           <button
             onClick={onShuffle}
             disabled={isLoading}
-            className="group relative bg-spotify-green hover:bg-spotify-green-hover text-black font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg hover:shadow-xl"
+            className="group relative inline-flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-black font-semibold py-3 px-6 rounded-full text-base transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg hover:shadow-xl"
           >
             {isLoading ? (
-              <div className="flex items-center space-x-3">
+              <>
                 <div className="animate-spin rounded-full h-5 w-5 border-2 border-black border-t-transparent"></div>
                 <span>Creating your mix...</span>
-              </div>
+              </>
             ) : (
-              <div className="flex items-center space-x-3">
-                <svg
-                  className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" />
+              <>
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z" />
                 </svg>
                 <span>Shuffle & Play</span>
-              </div>
+              </>
             )}
           </button>
           <p className="text-spotify-text-subdued text-sm mt-3">
@@ -279,7 +277,7 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
       )}
 
       {/* Empty State */}
-      {selectedArtists.length === 0 && (
+      {selectedArtists.length === 0 && !searchQuery && !isSearching && (
         <div className="text-center py-12 animate-fade-in-up">
           <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-spotify-dark-gray flex items-center justify-center">
             <svg
