@@ -12,7 +12,16 @@ app.secret_key = config.CLIENT_SECRET
 app.config['SESSION_COOKIE_NAME'] = 'spotify-login-session'
 
 # Enable CORS for the React frontend
-CORS(app, origins=['http://localhost:5173', 'http://localhost:3000'], supports_credentials=True)
+CORS(
+    app,
+    origins=[
+        'http://localhost:5173',
+        'http://localhost:3000',
+        'http://127.0.0.1:5173',
+        'http://127.0.0.1:3000',
+    ],
+    supports_credentials=True,
+)
 
 sp_oauth = SpotifyOAuth(
     client_id=config.CLIENT_ID,
@@ -104,10 +113,8 @@ def top_artists():
     return jsonify(top_artists)
 @app.route('/select_artists')
 def select_artists():
-    ''' Retrieves user selected artists '''
-    selected_artists = session.get('selected_artists', [])
-    user_profile = session.get('user_profile', {})
-    return render_template('select_artists.html', selected_artists=selected_artists, user_profile=user_profile)
+    ''' Redirect to React app after authentication '''
+    return redirect('http://127.0.0.1:5173')
 
 @app.route('/search_artists', methods=['GET'])
 def search_artists():
@@ -268,19 +275,6 @@ def play_track():
     except spotipy.exceptions.SpotifyException as e:
         print(f"Error resuming playback: {e}")
         return {'error': 'Failed to resume playback'}, 500
-    
-@app.route('/top_artists')
-def top_artists():
-    token = get_token()
-    if not token:
-        return {'error': 'User not logged in'}, 401
-
-    sp = spotipy.Spotify(auth=token)
-    
-    results = sp.current_user_top_artists(limit=4, time_range='short_term')
-    top_artists = [{'name': artist['name'], 'image': artist['images'][0]['url']} for artist in results['items']]
-    
-    return jsonify(top_artists)
 
 if __name__ == '__main__':
     app.run(debug=True)
