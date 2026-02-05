@@ -39,7 +39,7 @@ export const Login: React.FC = () => {
               className="hover:text-white transition-colors"
               onClick={(e) => {
                 e.preventDefault();
-                window.location.href = '/how-it-works';
+                window.location.href = "/how-it-works";
               }}
             >
               How it works
@@ -49,7 +49,7 @@ export const Login: React.FC = () => {
               className="hover:text-white transition-colors"
               onClick={(e) => {
                 e.preventDefault();
-                window.location.href = '/about';
+                window.location.href = "/about";
               }}
             >
               About
@@ -209,7 +209,11 @@ export const Login: React.FC = () => {
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto animate-fade-in-delayed">
           <div className="rounded-3xl bg-gradient-to-br from-black/40 to-spotify-green/5 backdrop-blur border border-white/5 p-8 hover:from-black/60 hover:to-spotify-green/10 transition-all duration-300 group">
             <div className="w-14 h-14 bg-spotify-green/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:bg-spotify-green/20 transition-all duration-300">
-              <svg className="w-7 h-7 text-spotify-green" fill="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-7 h-7 text-spotify-green"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path d="M11.99 5V1h-1v4H8.21V4.04H7.04v.96H3.5V6h3.54v12H7.04v.96h1.17v-.96h3.78v1.04h1v-4c1.1 0 2-.9 2-2h1V7c0-1.1-.9-2-2-2h-1V5h-1.01zm.01 14H9v-8h3v8z" />
               </svg>
             </div>
@@ -223,8 +227,18 @@ export const Login: React.FC = () => {
 
           <div className="rounded-3xl bg-gradient-to-br from-black/40 to-spotify-green/5 backdrop-blur border border-white/5 p-8 hover:from-black/60 hover:to-spotify-green/10 transition-all duration-300 group">
             <div className="w-14 h-14 bg-spotify-green/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:bg-spotify-green/20 transition-all duration-300">
-              <svg className="w-7 h-7 text-spotify-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              <svg
+                className="w-7 h-7 text-spotify-green"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
               </svg>
             </div>
             <h3 className="text-lg font-semibold text-white mb-2 text-center">
@@ -237,8 +251,18 @@ export const Login: React.FC = () => {
 
           <div className="rounded-3xl bg-gradient-to-br from-black/40 to-spotify-green/5 backdrop-blur border border-white/5 p-8 hover:from-black/60 hover:to-spotify-green/10 transition-all duration-300 group">
             <div className="w-14 h-14 bg-spotify-green/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:bg-spotify-green/20 transition-all duration-300">
-              <svg className="w-7 h-7 text-spotify-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-7 h-7 text-spotify-green"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <h3 className="text-lg font-semibold text-white mb-2 text-center">

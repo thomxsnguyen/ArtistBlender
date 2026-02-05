@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { SearchContainer } from "./components/SearchContainer";
 import { AlbumCover } from "./components/AlbumCover";
 import { PlaybackControls } from "./components/PlaybackControls";
@@ -17,6 +17,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const isPollingRef = useRef(false);
 
   useEffect(() => {
     // Check if user is authenticated by trying to get top artists
@@ -63,6 +64,45 @@ function App() {
     };
 
     initPlaybackState();
+  }, [isAuthenticated, isCheckingAuth]);
+
+  useEffect(() => {
+    if (!isAuthenticated || isCheckingAuth) {
+      return;
+    }
+
+    let isMounted = true;
+
+    const pollPlaybackState = async () => {
+      if (isPollingRef.current) {
+        return;
+      }
+      isPollingRef.current = true;
+      try {
+        const trackData = await spotifyApi.getCurrentTrack();
+        if (!isMounted) {
+          return;
+        }
+        if ("show_controls" in trackData && trackData.show_controls) {
+          setCurrentTrack(trackData as Track);
+          setShowControls(true);
+        } else {
+          setShowControls(false);
+        }
+      } catch (error) {
+        console.error("Error polling playback state:", error);
+      } finally {
+        isPollingRef.current = false;
+      }
+    };
+
+    const intervalId = window.setInterval(pollPlaybackState, 5000);
+    pollPlaybackState();
+
+    return () => {
+      isMounted = false;
+      window.clearInterval(intervalId);
+    };
   }, [isAuthenticated, isCheckingAuth]);
 
   const handleShuffle = async () => {

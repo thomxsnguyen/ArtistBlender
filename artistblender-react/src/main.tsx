@@ -1,12 +1,12 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import './index.css'
-import App from './App.tsx'
-import HowItWorks from './pages/HowItWorks'
-import About from './pages/About'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "./index.css";
+import App from "./App.tsx";
+import HowItWorks from "./pages/HowItWorks";
+import About from "./pages/About";
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Router>
       <Routes>
@@ -16,4 +16,4 @@ createRoot(document.getElementById('root')!).render(
       </Routes>
     </Router>
   </StrictMode>,
-)
+);

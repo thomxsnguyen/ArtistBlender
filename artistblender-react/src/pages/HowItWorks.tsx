@@ -12,11 +12,18 @@ export default function HowItWorks() {
         <header className="border-b border-white/10 backdrop-blur-md bg-black/50">
           <div className="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
             <button
-              onClick={() => window.location.href = '/'}
+              onClick={() => (window.location.href = "/")}
               className="flex items-center gap-2 text-white hover:text-spotify-green transition-colors"
             >
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M19 12H5M12 19l-7-7 7-7" strokeWidth={2} stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M19 12H5M12 19l-7-7 7-7"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
               <span>Back</span>
             </button>
@@ -36,9 +43,12 @@ export default function HowItWorks() {
               <div className="w-16 h-16 bg-gradient-to-br from-spotify-green/20 to-spotify-green/5 rounded-2xl flex items-center justify-center mb-6 group-hover:from-spotify-green/40 group-hover:to-spotify-green/20 transition-all duration-300">
                 <span className="text-2xl font-bold text-spotify-green">1</span>
               </div>
-              <h3 className="text-2xl font-semibold text-white mb-3">Search Artists</h3>
+              <h3 className="text-2xl font-semibold text-white mb-3">
+                Search Artists
+              </h3>
               <p className="text-gray-300 leading-relaxed">
-                Start by searching for your favorite artists in the search bar. Find exactly who you want to blend.
+                Start by searching for your favorite artists in the search bar.
+                Find exactly who you want to blend.
               </p>
             </div>
 
@@ -47,9 +57,12 @@ export default function HowItWorks() {
               <div className="w-16 h-16 bg-gradient-to-br from-spotify-green/20 to-spotify-green/5 rounded-2xl flex items-center justify-center mb-6 group-hover:from-spotify-green/40 group-hover:to-spotify-green/20 transition-all duration-300">
                 <span className="text-2xl font-bold text-spotify-green">2</span>
               </div>
-              <h3 className="text-2xl font-semibold text-white mb-3">Select & Combine</h3>
+              <h3 className="text-2xl font-semibold text-white mb-3">
+                Select & Combine
+              </h3>
               <p className="text-gray-300 leading-relaxed">
-                Click on artists to add them to your blend. You can mix as many artists as you want for ultimate customization.
+                Click on artists to add them to your blend. You can mix as many
+                artists as you want for ultimate customization.
               </p>
             </div>
 
@@ -58,9 +71,12 @@ export default function HowItWorks() {
               <div className="w-16 h-16 bg-gradient-to-br from-spotify-green/20 to-spotify-green/5 rounded-2xl flex items-center justify-center mb-6 group-hover:from-spotify-green/40 group-hover:to-spotify-green/20 transition-all duration-300">
                 <span className="text-2xl font-bold text-spotify-green">3</span>
               </div>
-              <h3 className="text-2xl font-semibold text-white mb-3">Click Shuffle</h3>
+              <h3 className="text-2xl font-semibold text-white mb-3">
+                Click Shuffle
+              </h3>
               <p className="text-gray-300 leading-relaxed">
-                Hit the shuffle button to generate a personalized blend of tracks from your selected artists.
+                Hit the shuffle button to generate a personalized blend of
+                tracks from your selected artists.
               </p>
             </div>
 
@@ -69,9 +85,12 @@ export default function HowItWorks() {
               <div className="w-16 h-16 bg-gradient-to-br from-spotify-green/20 to-spotify-green/5 rounded-2xl flex items-center justify-center mb-6 group-hover:from-spotify-green/40 group-hover:to-spotify-green/20 transition-all duration-300">
                 <span className="text-2xl font-bold text-spotify-green">4</span>
               </div>
-              <h3 className="text-2xl font-semibold text-white mb-3">Enjoy & Preview</h3>
+              <h3 className="text-2xl font-semibold text-white mb-3">
+                Enjoy & Preview
+              </h3>
               <p className="text-gray-300 leading-relaxed">
-                Listen to track previews and explore your blend. Discover new music at the intersection of your favorite artists.
+                Listen to track previews and explore your blend. Discover new
+                music at the intersection of your favorite artists.
               </p>
             </div>
           </div>
@@ -82,37 +101,83 @@ export default function HowItWorks() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 bg-spotify-green/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-spotify-green" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 19V6l12-1v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-1" strokeWidth={2} stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  <svg
+                    className="w-6 h-6 text-spotify-green"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M9 19V6l12-1v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-1"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </div>
                 <div>
-                  <h4 className="text-lg font-semibold text-white mb-1">Instant Playback</h4>
-                  <p className="text-gray-400 text-sm">Start playing your blend immediately with integrated Spotify controls.</p>
+                  <h4 className="text-lg font-semibold text-white mb-1">
+                    Instant Playback
+                  </h4>
+                  <p className="text-gray-400 text-sm">
+                    Start playing your blend immediately with integrated Spotify
+                    controls.
+                  </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 bg-spotify-green/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-spotify-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  <svg
+                    className="w-6 h-6 text-spotify-green"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4v16m8-8H4"
+                    />
                   </svg>
                 </div>
                 <div>
-                  <h4 className="text-lg font-semibold text-white mb-1">Unlimited Artists</h4>
-                  <p className="text-gray-400 text-sm">Combine as many artists as you want for endless creative possibilities.</p>
+                  <h4 className="text-lg font-semibold text-white mb-1">
+                    Unlimited Artists
+                  </h4>
+                  <p className="text-gray-400 text-sm">
+                    Combine as many artists as you want for endless creative
+                    possibilities.
+                  </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 bg-spotify-green/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-spotify-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  <svg
+                    className="w-6 h-6 text-spotify-green"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
                   </svg>
                 </div>
                 <div>
-                  <h4 className="text-lg font-semibold text-white mb-1">Smart Algorithm</h4>
-                  <p className="text-gray-400 text-sm">Advanced blending technology creates natural, seamless music combinations.</p>
+                  <h4 className="text-lg font-semibold text-white mb-1">
+                    Smart Algorithm
+                  </h4>
+                  <p className="text-gray-400 text-sm">
+                    Advanced blending technology creates natural, seamless music
+                    combinations.
+                  </p>
                 </div>
               </div>
             </div>

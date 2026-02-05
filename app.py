@@ -1,6 +1,7 @@
 import spotipy
 import config
 import random
+import os
 from spotipy.oauth2 import SpotifyOAuth
 from flask import Flask, redirect, request, session, render_template, jsonify
 from flask_cors import CORS
@@ -304,4 +305,5 @@ def play_track():
         return {'error': 'Failed to resume playback'}, 500
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8000)
+    port = int(os.environ.get('PORT', 8000))
+    app.run(host='0.0.0.0', port=port)

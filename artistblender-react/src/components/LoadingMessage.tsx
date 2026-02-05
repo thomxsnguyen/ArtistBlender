@@ -17,23 +17,7 @@ export const LoadingMessage: React.FC = () => {
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/10 pointer-events-none"></div>
 
-          {/* Animated top icon */}
-          <div className="absolute -top-8 left-1/2 -translate-x-1/2">
-            <div className="relative">
-              <div className="w-16 h-16 bg-gradient-to-br from-spotify-green to-spotify-green-light rounded-2xl flex items-center justify-center shadow-[0_20px_40px_rgba(29,185,84,0.4)] animate-gentle-bounce">
-                <svg
-                  className="w-8 h-8 text-black animate-spin-slow"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                </svg>
-              </div>
-              <div className="absolute inset-0 w-16 h-16 bg-spotify-green rounded-2xl animate-ping opacity-20"></div>
-            </div>
-          </div>
-
-          <div className="px-8 py-12 pt-16 text-center">
+          <div className="px-8 py-12 pt-8 text-center">
             {/* Status text */}
             <div className="animate-text-shimmer">
               <p className="text-xs font-medium uppercase tracking-[0.4em] text-spotify-green mb-4 animate-pulse">
