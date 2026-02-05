@@ -1,6 +1,19 @@
 ''' Configuration keys'''
 
-CLIENT_ID = '87b96d1c742147e99ff9d69ae7f87384'
-CLIENT_SECRET = '6f3b0516589e40ebba4dd02ba8949f65'
-REDIRECT_URI = 'http://127.0.0.1:8000/callback'
-SCOPE = 'user-top-read user-library-read user-read-playback-state user-modify-playback-state'
+import os
+
+
+def _get_env(name: str) -> str:
+	value = os.environ.get(name)
+	if not value:
+		raise RuntimeError(f"Missing required environment variable: {name}")
+	return value
+
+
+CLIENT_ID = _get_env('CLIENT_ID')
+CLIENT_SECRET = _get_env('CLIENT_SECRET')
+REDIRECT_URI = _get_env('REDIRECT_URI')
+SCOPE = os.environ.get(
+	'SCOPE',
+	'user-top-read user-library-read user-read-playback-state user-modify-playback-state'
+)

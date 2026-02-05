@@ -7,7 +7,7 @@ import type {
   ShuffleResponse,
 } from "../types";
 
-const API_BASE_URL = "/api"; // Proxy to Flask backend
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api"; // Proxy to Flask backend
 
 const api = axios.create({
   baseURL: API_BASE_URL,

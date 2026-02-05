@@ -13,14 +13,21 @@ app.secret_key = config.CLIENT_SECRET
 app.config['SESSION_COOKIE_NAME'] = 'spotify-login-session'
 
 # Enable CORS for the React frontend
+cors_origins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:3000',
+]
+extra_origins = os.environ.get('CORS_ORIGINS')
+if extra_origins:
+    cors_origins.extend(
+        [origin.strip() for origin in extra_origins.split(',') if origin.strip()]
+    )
+
 CORS(
     app,
-    origins=[
-        'http://localhost:5173',
-        'http://localhost:3000',
-        'http://127.0.0.1:5173',
-        'http://127.0.0.1:3000',
-    ],
+    origins=cors_origins,
     supports_credentials=True,
 )
 
