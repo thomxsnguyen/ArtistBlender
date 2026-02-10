@@ -112,7 +112,7 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search for artists..."
-            className="w-full pl-12 pr-12 py-3.5 bg-spotify-black text-white placeholder-spotify-text-subdued rounded-full border border-spotify-border-gray focus:outline-none focus:border-spotify-green/50 focus:ring-0 selection:bg-spotify-green/20 selection:text-white transition-all duration-200 text-base"
+            className="w-full pl-12 pr-12 py-3.5 bg-black text-white placeholder-gray-500 rounded-full border border-white/10 focus:outline-none focus:border-white/20 focus:ring-0 selection:bg-spotify-green/20 selection:text-white transition-all duration-200 text-base"
           />
           {searchQuery && (
             <button
@@ -143,15 +143,15 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
 
         {/* Search Results Dropdown */}
         {showDropdown && searchResults.length > 0 && (
-          <div className="mt-3 bg-spotify-dark-gray/95 backdrop-blur-xl border border-spotify-border-gray rounded-2xl shadow-[0_25px_50px_rgba(0,0,0,0.6)] max-h-80 overflow-y-auto animate-modal-slide-up">
+          <div className="mt-3 bg-neutral-900 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_25px_50px_rgba(0,0,0,0.6)] max-h-80 overflow-y-auto animate-modal-slide-up">
             {searchResults.map((artist, index) => (
               <button
                 key={artist.id}
                 onClick={() => handleArtistSelect(artist)}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-spotify-medium-gray/70 transition-all duration-300 text-left group hover:scale-[1.02] transform-gpu"
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-all duration-300 text-left group hover:scale-[1.02] transform-gpu"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <div className="w-12 h-12 rounded-full bg-spotify-medium-gray flex items-center justify-center overflow-hidden">
+                <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden">
                   {artist.image ? (
                     <img
                       src={artist.image}
@@ -192,11 +192,11 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
             {selectedArtists.map((artist, index) => (
               <div
                 key={artist.id}
-                className="group relative bg-spotify-dark-gray hover:bg-spotify-medium-gray rounded-lg p-4 transition-all duration-300 hover:shadow-lg hover:scale-105 animate-scale-in transform-gpu"
+                className="group relative bg-neutral-900 hover:bg-neutral-800 rounded-lg p-4 transition-all duration-300 hover:shadow-lg hover:scale-105 animate-scale-in transform-gpu"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="pointer-events-none absolute inset-0 rounded-lg bg-spotify-green/10" />
-                <div className="relative z-10 aspect-square rounded-lg bg-spotify-medium-gray mb-3 overflow-hidden">
+                <div className="pointer-events-none absolute inset-0 rounded-lg bg-transparent" />
+                <div className="relative z-10 aspect-square rounded-lg bg-gray-800 mb-3 overflow-hidden">
                   {artist.image ? (
                     <img
                       src={artist.image}
@@ -214,24 +214,28 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
                       </svg>
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveArtist(artist.id);
-                      }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-red-400 hover:text-red-300"
+                  {/* Subtle remove button in top-right corner */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveArtist(artist.id);
+                    }}
+                    className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 hover:bg-black/80 transition-all duration-200 hover:scale-110 active:scale-95"
+                  >
+                    <svg
+                      className="w-3.5 h-3.5 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2.5}
                     >
-                      <svg
-                        className="w-5 h-5"
-                        fill="currentColor"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
                 </div>
                 <p className="relative z-10 text-white font-medium text-sm truncate">
                   {artist.name}

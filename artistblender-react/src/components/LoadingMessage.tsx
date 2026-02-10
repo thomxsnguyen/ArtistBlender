@@ -11,13 +11,13 @@ export const LoadingMessage: React.FC = () => {
       <div className="absolute bottom-1/4 right-1/4 w-24 h-24 bg-spotify-green/10 rounded-full blur-2xl animate-float-delayed"></div>
 
       {/* Main modal */}
-      <div className="relative animate-modal-slide-up">
+      <div className="relative animate-modal-slide-up flex items-center justify-center">
         {/* Glass morphism container */}
         <div className="relative w-full max-w-md mx-4 rounded-[2.5rem] bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_40px_120px_rgba(0,0,0,0.7)] overflow-hidden">
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/10 pointer-events-none"></div>
 
-          <div className="px-8 py-12 pt-8 text-center">
+          <div className="px-8 py-12 flex flex-col items-center justify-center text-center">
             {/* Status text */}
             <div className="animate-text-shimmer">
               <p className="text-xs font-medium uppercase tracking-[0.4em] text-spotify-green mb-4 animate-pulse">

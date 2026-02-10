@@ -112,6 +112,7 @@ function App() {
     }
 
     setIsLoading(true);
+    setError(null); // Clear any previous errors
     try {
       const artistIds = selectedArtists.map((artist) => artist.id);
       const result = await spotifyApi.shuffle(artistIds);
@@ -208,19 +209,14 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-spotify-black text-white relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-spotify-dark-gray/70 via-spotify-black to-spotify-black animate-pulse-slow"></div>
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(29,185,84,0.12),_transparent_60%)] animate-float-delayed"></div>
-
-      {/* Floating orbs for ambient animation */}
-      <div className="pointer-events-none absolute top-20 right-20 w-96 h-96 bg-spotify-green/5 rounded-full blur-3xl animate-float opacity-40"></div>
-      <div className="pointer-events-none absolute bottom-20 left-20 w-64 h-64 bg-spotify-green/3 rounded-full blur-2xl animate-float-delayed opacity-30"></div>
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black via-black to-black"></div>
 
       <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6 animate-fade-in">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-2xl bg-spotify-green/15 text-spotify-green flex items-center justify-center animate-gentle-bounce group">
+          <div className="h-10 w-10 rounded-full bg-spotify-green flex items-center justify-center group">
             <svg
-              className="h-6 w-6 group-hover:scale-110 transition-transform duration-300"
+              className="h-5 w-5 text-white group-hover:scale-110 transition-transform duration-300"
               viewBox="0 0 24 24"
               fill="currentColor"
             >
@@ -239,8 +235,8 @@ function App() {
         <div className="flex items-center gap-3 animate-slide-in-right">
           {userProfile && (
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-spotify-dark-gray/50 rounded-full border border-spotify-border-gray">
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-spotify-medium-gray flex items-center justify-center">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-black/80 rounded-full border border-white/10">
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-800 flex items-center justify-center">
                   {userProfile.profile_image ? (
                     <img
                       src={userProfile.profile_image}
@@ -263,7 +259,7 @@ function App() {
               </div>
               <button
                 onClick={handleLogout}
-                className="p-2 rounded-full bg-spotify-dark-gray/50 border border-spotify-border-gray hover:bg-spotify-medium-gray hover:border-red-500/50 text-spotify-text-subdued hover:text-red-400 transition-all duration-300 group"
+                className="p-2 rounded-full bg-black/80 border border-white/10 hover:bg-gray-900 hover:border-red-500/50 text-gray-400 hover:text-red-400 transition-all duration-300 group"
                 title="Logout"
               >
                 <svg
@@ -297,7 +293,7 @@ function App() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-          <section className="rounded-3xl bg-spotify-dark-gray/80 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
+          <section className="rounded-3xl bg-neutral-900/50 p-6 border border-white/5">
             <SearchContainer
               selectedArtists={selectedArtists}
               onArtistsChange={setSelectedArtists}
@@ -307,10 +303,15 @@ function App() {
             />
           </section>
 
-          <aside className="rounded-3xl bg-spotify-dark-gray/80 p-6 shadow-[0_14px_40px_rgba(0,0,0,0.35)]">
+          <aside className="rounded-3xl bg-neutral-900/50 p-6 border border-white/5">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Now playing</h3>
-              <span className="text-xs text-spotify-text-subdued">Live</span>
+              {currentTrack && showControls && (
+                <span className="flex items-center gap-2 text-xs font-medium text-spotify-green bg-spotify-green/10 px-3 py-1 rounded-full">
+                  <span className="w-2 h-2 bg-spotify-green rounded-full animate-pulse"></span>
+                  Live
+                </span>
+              )}
             </div>
 
             {currentTrack && showControls ? (
