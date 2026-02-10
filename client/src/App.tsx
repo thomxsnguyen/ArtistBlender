@@ -4,6 +4,7 @@ import { AlbumCover } from "./components/AlbumCover";
 import { PlaybackControls } from "./components/PlaybackControls";
 import { ErrorPopup } from "./components/ErrorPopup";
 import { LoadingMessage } from "./components/LoadingMessage";
+import { Login } from "./components/Login";
 import { spotifyApi } from "./utils/api";
 import type { Artist, Track, UserProfile } from "./types";
 
@@ -182,17 +183,14 @@ function App() {
       setSelectedArtists([]);
       setCurrentTrack(null);
       setShowControls(false);
-      // Redirect to login page
-      window.location.href = "/login";
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
 
-  // Redirect to login page if not authenticated
+  // Show login page if not authenticated
   if (!isAuthenticated && !isCheckingAuth) {
-    window.location.href = "/login";
-    return null;
+    return <Login />;
   }
 
   // Show loading while checking authentication
