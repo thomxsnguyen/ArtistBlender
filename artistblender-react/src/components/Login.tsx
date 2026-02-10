@@ -59,7 +59,7 @@ export const Login: React.FC = () => {
       </nav>
 
       {/* Main content */}
-      <div className="relative z-10 max-w-4xl mx-auto text-center animate-fade-in-up pt-12">
+      <div className="relative z-10 max-w-4xl mx-auto text-center animate-fade-in-up pt-48">
         {/* Hero section */}
         <div className="mb-12">
           <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-white to-gray-300 bg-clip-text text-transparent leading-tight animate-title-glow">
@@ -169,20 +169,38 @@ export const Login: React.FC = () => {
                 {/* Sample artist cards */}
                 <div className="grid grid-cols-3 gap-3">
                   <div className="bg-spotify-dark-gray/60 rounded-lg p-3">
-                    <div className="w-full aspect-square bg-gradient-to-br from-purple-500/40 to-pink-500/40 rounded mb-2"></div>
+                    <div className="w-full aspect-square rounded mb-2 overflow-hidden">
+                      <img 
+                        src="https://i.scdn.co/image/ab6761610000e5eb859e4c14fa59296c8649e0e4" 
+                        alt="Taylor Swift"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                     <p className="text-white text-sm font-medium">
                       Taylor Swift
                     </p>
                     <p className="text-gray-400 text-xs">Artist</p>
                   </div>
                   <div className="bg-spotify-dark-gray/60 rounded-lg p-3">
-                    <div className="w-full aspect-square bg-gradient-to-br from-blue-500/40 to-purple-500/40 rounded mb-2"></div>
+                    <div className="w-full aspect-square rounded mb-2 overflow-hidden">
+                      <img 
+                        src="https://i.scdn.co/image/ab6761610000e5eb4293385d324db8558179afd9" 
+                        alt="Drake"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                     <p className="text-white text-sm font-medium">Drake</p>
                     <p className="text-gray-400 text-xs">Artist</p>
                   </div>
                   <div className="bg-spotify-dark-gray/60 rounded-lg p-3">
-                    <div className="w-full aspect-square bg-gradient-to-br from-green-500/40 to-blue-500/40 rounded mb-2"></div>
-                    <p className="text-white text-sm font-medium">The Weeknd</p>
+                    <div className="w-full aspect-square rounded mb-2 overflow-hidden">
+                      <img 
+                        src="https://i.scdn.co/image/ab6761610000e5eb19c2790744c792d05570bb71" 
+                        alt="Travis Scott"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <p className="text-white text-sm font-medium">Travis Scott</p>
                     <p className="text-gray-400 text-xs">Artist</p>
                   </div>
                 </div>

@@ -13,6 +13,15 @@ fi
 # Start Flask backend in the background
 echo "🐍 Starting Flask backend..."
 source .venv/bin/activate
+
+# Load environment variables from .env
+if [ -f ".env" ]; then
+    export $(cat .env | xargs)
+else
+    echo "❌ .env file not found. Please create one from .env.example"
+    exit 1
+fi
+
 python app.py &
 FLASK_PID=$!
 

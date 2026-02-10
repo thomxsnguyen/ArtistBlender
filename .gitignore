@@ -40,6 +40,10 @@ venv/
 .cache
 *.cache
 
+# Environment files
+.env
+.env.*
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
