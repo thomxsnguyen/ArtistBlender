@@ -182,14 +182,17 @@ function App() {
       setSelectedArtists([]);
       setCurrentTrack(null);
       setShowControls(false);
+      // Redirect to login page
+      window.location.href = "/login";
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
 
-  // Show login page if not authenticated
+  // Redirect to login page if not authenticated
   if (!isAuthenticated && !isCheckingAuth) {
-    return <Login />;
+    window.location.href = "/login";
+    return null;
   }
 
   // Show loading while checking authentication
@@ -325,8 +328,10 @@ function App() {
                 </div>
               </div>
             ) : (
-              <div className="mt-6 rounded-2xl bg-spotify-black/60 p-6 text-sm text-spotify-text-subdued">
-                Start a blend to see playback controls here.
+              <div className="mt-6 text-center py-8">
+                <p className="text-white/50 text-sm leading-relaxed">
+                  Start a blend to see playback controls here.
+                </p>
               </div>
             )}
           </aside>

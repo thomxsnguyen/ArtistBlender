@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { spotifyApi } from "../utils/api";
 
 export const Login: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -11,6 +13,22 @@ export const Login: React.FC = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    // Logout when component mounts
+    const handleLogout = async () => {
+      try {
+        await spotifyApi.logout();
+      } catch (error) {
+        console.error("Logout failed:", error);
+      }
+    };
+    handleLogout();
+  }, []);
+
+  const handleGetStarted = () => {
+    setShowAuthModal(true);
+  };
 
   const handleSpotifyLogin = () => {
     // Redirect to Flask backend login endpoint
@@ -29,34 +47,50 @@ export const Login: React.FC = () => {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-spotify-green/5 via-transparent to-transparent rounded-full animate-pulse-slow"></div>
 
       {/* Floating Pill Navbar */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 flex justify-center transition-all duration-500 ease-out ${
-        isScrolled ? 'pt-4' : 'pt-6'
-      }`}>
-        <div className={`flex items-center justify-between transition-all duration-500 ease-out ${
-          isScrolled 
-            ? 'bg-black/70 backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] rounded-full px-10 py-3 w-[900px]' 
-            : 'bg-transparent border border-transparent rounded-full px-12 py-4 w-[1000px]'
-        } hover:shadow-[0_8px_40px_rgba(30,215,96,0.15)] hover:border-white/30`}>
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 flex justify-center transition-all duration-500 ease-out ${
+          isScrolled ? "pt-4" : "pt-6"
+        }`}
+      >
+        <div
+          className={`flex items-center justify-between transition-all duration-500 ease-out ${
+            isScrolled
+              ? "bg-black/70 backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.4)] rounded-full px-10 py-3 w-[900px]"
+              : "bg-transparent border border-transparent rounded-full px-12 py-4 w-[1000px]"
+          }`}
+        >
           <div className="flex items-center gap-3">
-            <div className={`rounded-full bg-spotify-green/20 text-spotify-green flex items-center justify-center transition-all duration-500 ${
-              isScrolled ? 'h-8 w-8' : 'h-10 w-10'
-            } hover:bg-spotify-green/30 hover:scale-110`}>
-              <svg className={`transition-all duration-500 ${isScrolled ? 'h-4 w-4' : 'h-5 w-5'}`} viewBox="0 0 24 24" fill="currentColor">
+            <div
+              className={`rounded-full bg-spotify-green/20 text-spotify-green flex items-center justify-center transition-all duration-500 ${
+                isScrolled ? "h-8 w-8" : "h-10 w-10"
+              } hover:bg-spotify-green/30 hover:scale-110`}
+            >
+              <svg
+                className={`transition-all duration-500 ${isScrolled ? "h-4 w-4" : "h-5 w-5"}`}
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
                 <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.84-.179-.84-.66 0-.359.24-.66.54-.78 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.242 1.021zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
               </svg>
             </div>
             <div className="transition-all duration-500">
-              <p className={`uppercase tracking-[0.3em] text-spotify-text-subdued transition-all duration-500 ${
-                isScrolled ? 'text-[9px]' : 'text-[10px]'
-              }`}>
+              <p
+                className={`uppercase tracking-[0.3em] text-spotify-text-subdued transition-all duration-500 ${
+                  isScrolled ? "text-[9px]" : "text-[10px]"
+                }`}
+              >
                 Spotify
               </p>
-              <p className={`font-semibold text-white transition-all duration-500 ${
-                isScrolled ? 'text-xs' : 'text-sm'
-              }`}>ArtistBlender</p>
+              <p
+                className={`font-semibold text-white transition-all duration-500 ${
+                  isScrolled ? "text-xs" : "text-sm"
+                }`}
+              >
+                ArtistBlender
+              </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-8 text-sm text-spotify-text-subdued">
             <a
               href="#how-it-works"
@@ -87,15 +121,15 @@ export const Login: React.FC = () => {
       {/* Main content */}
       <div className="relative z-10 max-w-4xl mx-auto text-center animate-fade-in-up pt-48">
         {/* Hero section */}
-        <div className="mb-12">
-          <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-white to-gray-300 bg-clip-text text-transparent leading-tight animate-title-glow">
+        <div className="mb-20">
+          <h1 className="text-6xl md:text-7xl font-bold mb-12 bg-gradient-to-r from-white via-white to-gray-300 bg-clip-text text-transparent leading-tight animate-title-glow">
             Blend your
             <br />
             <span className="bg-gradient-to-r from-spotify-green via-spotify-green-light to-spotify-green bg-clip-text text-transparent">
               favorite artists
             </span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed animate-fade-in-delayed">
+          <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed animate-fade-in-delayed mb-12">
             Create seamless mixes from the artists you love and play them
             instantly.
           </p>
@@ -104,13 +138,13 @@ export const Login: React.FC = () => {
         {/* CTA Button */}
         <div className="mb-16 animate-scale-in">
           <button
-            onClick={handleSpotifyLogin}
+            onClick={handleGetStarted}
             className="group relative inline-flex items-center gap-3 bg-white hover:bg-gray-100 text-black font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_20px_40px_rgba(255,255,255,0.25)]"
           >
             <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.84-.179-.84-.66 0-.359.24-.66.54-.78 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.242 1.021zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
             </svg>
-            Get for Spotify
+            Get Started
             <svg
               className="w-5 h-5 group-hover:translate-x-1 transition-transform"
               fill="none"
@@ -196,8 +230,8 @@ export const Login: React.FC = () => {
                 <div className="grid grid-cols-3 gap-3">
                   <div className="bg-spotify-dark-gray/60 rounded-lg p-3">
                     <div className="w-full aspect-square rounded mb-2 overflow-hidden">
-                      <img 
-                        src="https://i.scdn.co/image/ab6761610000e5eb859e4c14fa59296c8649e0e4" 
+                      <img
+                        src="https://i.scdn.co/image/ab6761610000e5eb859e4c14fa59296c8649e0e4"
                         alt="Taylor Swift"
                         className="w-full h-full object-cover"
                       />
@@ -209,8 +243,8 @@ export const Login: React.FC = () => {
                   </div>
                   <div className="bg-spotify-dark-gray/60 rounded-lg p-3">
                     <div className="w-full aspect-square rounded mb-2 overflow-hidden">
-                      <img 
-                        src="https://i.scdn.co/image/ab6761610000e5eb4293385d324db8558179afd9" 
+                      <img
+                        src="https://i.scdn.co/image/ab6761610000e5eb4293385d324db8558179afd9"
                         alt="Drake"
                         className="w-full h-full object-cover"
                       />
@@ -220,13 +254,15 @@ export const Login: React.FC = () => {
                   </div>
                   <div className="bg-spotify-dark-gray/60 rounded-lg p-3">
                     <div className="w-full aspect-square rounded mb-2 overflow-hidden">
-                      <img 
-                        src="https://i.scdn.co/image/ab6761610000e5eb19c2790744c792d05570bb71" 
+                      <img
+                        src="https://i.scdn.co/image/ab6761610000e5eb19c2790744c792d05570bb71"
                         alt="Travis Scott"
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <p className="text-white text-sm font-medium">Travis Scott</p>
+                    <p className="text-white text-sm font-medium">
+                      Travis Scott
+                    </p>
                     <p className="text-gray-400 text-xs">Artist</p>
                   </div>
                 </div>
@@ -315,7 +351,8 @@ export const Login: React.FC = () => {
                 Seamless Integration
               </h3>
               <p className="text-gray-400 text-sm text-center leading-relaxed">
-                Native-like experience that works flawlessly with Spotify's ecosystem
+                Native-like experience that works flawlessly with Spotify's
+                ecosystem
               </p>
               <div className="mt-4 flex items-center justify-center gap-1.5">
                 <div className="w-1.5 h-1.5 bg-spotify-green rounded-full animate-pulse"></div>
@@ -326,6 +363,76 @@ export const Login: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Authentication Modal */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div className="relative bg-gradient-to-br from-spotify-dark-gray to-black border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl animate-scale-in">
+            <button
+              onClick={() => setShowAuthModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors duration-200"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-white mb-2">
+                Connect Your Spotify
+              </h2>
+              <p className="text-gray-400 text-sm">
+                Sign in with your Spotify account to continue
+              </p>
+            </div>
+
+            {/* Spotify Login */}
+            <button
+              onClick={handleSpotifyLogin}
+              className="w-full group relative bg-spotify-green hover:bg-[#1fdf64] text-white font-bold py-4 px-6 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_30px_rgba(30,215,96,0.3)]"
+            >
+              <div className="flex items-center justify-center gap-3">
+                <svg
+                  className="w-6 h-6"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.84-.179-.84-.66 0-.359.24-.66.54-.78 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.242 1.021zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
+                </svg>
+                Continue with Spotify
+                <svg
+                  className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                  />
+                </svg>
+              </div>
+            </button>
+
+            <p className="mt-6 text-center text-xs text-gray-500">
+              By continuing, you agree to ArtistBlender's Terms of Service and
+              Privacy Policy
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

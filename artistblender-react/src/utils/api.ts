@@ -70,6 +70,15 @@ export const spotifyApi = {
   // Logout
   logout: async (): Promise<void> => {
     await api.post("/logout");
+    // Clear all client-side storage
+    localStorage.clear();
+    sessionStorage.clear();
+    // Clear all cookies
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c
+        .replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
   },
 
   // Login (redirect to Spotify OAuth)

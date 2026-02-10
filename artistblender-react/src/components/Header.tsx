@@ -11,8 +11,8 @@ export const Header: React.FC<HeaderProps> = ({ userProfile }) => {
       <div className="container mx-auto px-6 py-4">
         <div className="grid grid-cols-3 items-center w-full">
           {/* Left: Spotify Logo & Brand */}
-          <div className="flex items-center space-x-3 justify-start">
-            <div className="group flex items-center space-x-2 cursor-pointer">
+          <div className="flex items-center space-x-6 justify-start">
+            <div className="group flex items-center space-x-3 cursor-pointer">
               <div className="relative">
                 <div className="absolute inset-0 bg-spotify-green/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <svg
@@ -38,7 +38,7 @@ export const Header: React.FC<HeaderProps> = ({ userProfile }) => {
           </div>
 
           {/* Center: Navigation */}
-          <nav className="hidden md:flex items-center justify-center space-x-6">
+          <nav className="hidden md:flex items-center justify-center space-x-8">
             <button className="group relative text-white hover:text-spotify-green transition-all duration-300 text-sm font-medium px-3 py-2 rounded-full hover:bg-spotify-medium-gray/50">
               <span className="relative z-10">Home</span>
               <div className="absolute inset-0 bg-spotify-green/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -57,35 +57,43 @@ export const Header: React.FC<HeaderProps> = ({ userProfile }) => {
           </nav>
 
           {/* Right: User Profile */}
-          <div className="flex items-center space-x-4 justify-end">
+          <div className="flex items-center space-x-6 justify-end">
             {userProfile ? (
-              <div className="flex items-center space-x-3 bg-spotify-dark-gray/50 hover:bg-spotify-dark-gray transition-colors duration-200 rounded-full px-3 py-2 cursor-pointer">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-spotify-green to-spotify-green-light flex items-center justify-center">
-                  <span className="text-white text-sm font-semibold">
-                    {userProfile.display_name?.charAt(0) || "U"}
-                  </span>
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-3 bg-spotify-dark-gray/50 hover:bg-spotify-dark-gray transition-colors duration-200 rounded-full px-3 py-2">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-spotify-green to-spotify-green-light flex items-center justify-center">
+                    <span className="text-white text-sm font-semibold">
+                      {userProfile.display_name?.charAt(0) || "U"}
+                    </span>
+                  </div>
+                  <div className="hidden sm:block">
+                    <p className="text-white text-sm font-medium">
+                      {userProfile.display_name || "User"}
+                    </p>
+                    <p className="text-spotify-text-subdued text-xs">
+                      Premium User
+                    </p>
+                  </div>
                 </div>
-                <div className="hidden sm:block">
-                  <p className="text-white text-sm font-medium">
-                    {userProfile.display_name || "User"}
-                  </p>
-                  <p className="text-spotify-text-subdued text-xs">
-                    Premium User
-                  </p>
-                </div>
-                <svg
-                  className="w-4 h-4 text-spotify-text-subdued"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                <button
+                  onClick={() => (window.location.href = "/login")}
+                  className="flex items-center gap-2 px-4 py-2 bg-spotify-medium-gray hover:bg-spotify-dark-gray text-white rounded-full transition-colors duration-200 text-sm font-medium"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                    />
+                  </svg>
+                  Logout
+                </button>
               </div>
             ) : (
               <div className="flex items-center space-x-3">

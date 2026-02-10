@@ -5,12 +5,14 @@ import "./index.css";
 import App from "./App.tsx";
 import HowItWorks from "./pages/HowItWorks";
 import About from "./pages/About";
+import { Login } from "./components/Login";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Router>
       <Routes>
         <Route path="/" element={<App />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/about" element={<About />} />
       </Routes>

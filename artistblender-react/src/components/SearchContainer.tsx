@@ -280,28 +280,27 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
 
       {/* Empty State */}
       {selectedArtists.length === 0 && !searchQuery && !isSearching && (
-        <div className="text-center py-12 animate-fade-in-up">
-          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-spotify-dark-gray flex items-center justify-center">
+        <div className="text-center py-20 animate-fade-in-up">
+          <div className="w-20 h-20 mx-auto mb-8 rounded-full bg-white/5 flex items-center justify-center backdrop-blur-sm">
             <svg
-              className="w-12 h-12 text-spotify-text-subdued"
+              className="w-9 h-9 text-white/60"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              strokeWidth={1.5}
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-white mb-2">
+          <h3 className="text-2xl font-semibold text-white mb-3">
             Start by searching for artists
           </h3>
-          <p className="text-spotify-text-subdued max-w-md mx-auto">
-            Find your favorite artists and create a personalized music mix.
-            Search above to get started.
+          <p className="text-white/60 text-base max-w-md mx-auto leading-relaxed">
+            Find your favorite artists and create a personalized music mix. Search above to get started.
           </p>
         </div>
       )}
