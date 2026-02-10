@@ -312,5 +312,6 @@ def play_track():
         return {'error': 'Failed to resume playback'}, 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 8000))
-    app.run(host='0.0.0.0', port=port)
+    port = int(os.environ.get('PORT', 8080))
+    print(f"Starting server on port {port}")
+    app.run(host='0.0.0.0', port=port, debug=False, threaded=True)

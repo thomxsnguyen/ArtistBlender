@@ -304,7 +304,8 @@ export const SearchContainer: React.FC<SearchContainerProps> = ({
             Start by searching for artists
           </h3>
           <p className="text-white/60 text-base max-w-md mx-auto leading-relaxed">
-            Find your favorite artists and create a personalized music mix. Search above to get started.
+            Find your favorite artists and create a personalized music mix.
+            Search above to get started.
           </p>
         </div>
       )}
