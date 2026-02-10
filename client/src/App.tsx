@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SearchContainer } from "./components/SearchContainer";
 import { AlbumCover } from "./components/AlbumCover";
 import { PlaybackControls } from "./components/PlaybackControls";
 import { ErrorPopup } from "./components/ErrorPopup";
 import { LoadingMessage } from "./components/LoadingMessage";
-import { Login } from "./components/Login";
 import { spotifyApi } from "./utils/api";
 import type { Artist, Track, UserProfile } from "./types";
 
@@ -25,7 +24,7 @@ function App() {
       try {
         const controller = new AbortController();
         const timeoutId = window.setTimeout(() => controller.abort(), 3000);
-        const topArtists = await spotifyApi.getTopArtists();
+        await spotifyApi.getTopArtists();
         window.clearTimeout(timeoutId);
 
         setIsAuthenticated(true);
