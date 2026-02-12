@@ -25,16 +25,21 @@ function App() {
       try {
         const controller = new AbortController();
         const timeoutId = window.setTimeout(() => controller.abort(), 3000);
-        await spotifyApi.getTopArtists();
+        const topArtistsData = await spotifyApi.getTopArtists();
         window.clearTimeout(timeoutId);
 
-        setIsAuthenticated(true);
-        // Fetch user profile
-        try {
-          const profile = await spotifyApi.getUserProfile();
-          setUserProfile(profile);
-        } catch (profileError) {
-          console.error("Profile fetch failed:", profileError);
+        // Only set authenticated if we got valid data
+        if (topArtistsData && Array.isArray(topArtistsData)) {
+          setIsAuthenticated(true);
+          // Fetch user profile
+          try {
+            const profile = await spotifyApi.getUserProfile();
+            setUserProfile(profile);
+          } catch (profileError) {
+            console.error("Profile fetch failed:", profileError);
+          }
+        } else {
+          setIsAuthenticated(false);
         }
         setIsCheckingAuth(false);
       } catch (error) {

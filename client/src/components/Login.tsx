@@ -32,7 +32,8 @@ export const Login: React.FC = () => {
 
   const handleSpotifyLogin = () => {
     // Redirect to Flask backend login endpoint
-    window.location.href = "http://127.0.0.1:8000/";
+    const backendUrl = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+    window.location.href = backendUrl;
   };
 
   return (
